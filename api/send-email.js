@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       },
       to: [
         {
-          email: process.env.VITE_CONTACT_EMAIL,
+          email: process.env.CONTACT_EMAIL,
           name: "Portfolio Contact"
         }
       ],
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
       headers: {
         'accept': 'application/json',
         'content-type': 'application/json',
-        'api-key': process.env.VITE_BREVO_API_KEY
+        'api-key': process.env.BREVO_API_KEY
       }
     });
 

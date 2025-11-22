@@ -137,7 +137,7 @@ const App = () => {
     setSubmitStatus('idle');
 
     try {
-      const response = await axios.post('http://localhost:3001/api/send-email', {
+      const response = await axios.post('/api/send-email', {
         name: formData.name,
         email: formData.email,
         message: formData.message
