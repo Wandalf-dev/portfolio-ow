@@ -11,12 +11,38 @@ import {
   ExternalLink, 
   Cpu, 
   Layers, 
-  Send,
-  Rocket
+  Send
 } from 'lucide-react';
-import emailjs from '@emailjs/browser';
+import { 
+  FaReact, FaVuejs, FaBootstrap, FaHtml5, FaCss3Alt, FaPhp, FaNodeJs, FaPython, 
+  FaGitAlt, FaFigma, FaLinux, FaTrello, FaTasks, FaFilm 
+} from 'react-icons/fa';
+import { 
+  SiTypescript, SiTailwindcss, SiMysql, SiPostgresql, SiVercel, SiFilezilla, SiJavascript 
+} from 'react-icons/si';
+import axios from 'axios';
 
 // --- UTILS ---
+
+// Composant icône personnalisé pour avoir le slash bien visible : </>
+const CodeSlashIcon = ({ size = 24, className = "", strokeWidth = 2.5 }: { size?: number; className?: string; strokeWidth?: number }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth={strokeWidth} 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+    <line x1="13.5" y1="3" x2="10.5" y2="21" />
+  </svg>
+);
 
 // Composant utilitaire pour l'animation d'apparition au scroll
 // Simple et réutilisable pour n'importe quelle section
@@ -110,28 +136,18 @@ const App = () => {
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
-    // Récupération des clés depuis le fichier .env (sécurisé)
-    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
     try {
-      await emailjs.send(
-        SERVICE_ID,
-        TEMPLATE_ID,
-        {
-          name: formData.name,      // Correspond à {{name}}
-          email: formData.email,    // Correspond à {{email}} (Reply To)
-          message: formData.message, // Correspond à {{message}}
-          title: "Portfolio Contact", // Pour remplir {{title}} dans le sujet
-          time: new Date().toLocaleString() // Pour remplir {{time}}
-        },
-        PUBLIC_KEY
-      );
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', message: '' });
+      const response = await axios.post('http://localhost:3001/api/send-email', {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message
+      });
+      
+      if (response.data.success) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+      }
     } catch (error) {
-      console.error('Erreur envoi email:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -217,7 +233,7 @@ const App = () => {
         {/* --- HERO SECTION --- */}
         <section id="home" className="min-h-screen flex flex-col justify-center pt-20 pb-10 container mx-auto px-6 md:px-12 max-w-6xl">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <RevealOnScroll className="space-y-8">
+            <RevealOnScroll className="space-y-8 order-2 md:order-1">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-400 text-sm font-medium hover:bg-orange-500/20 transition-colors cursor-default">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
@@ -246,22 +262,35 @@ const App = () => {
               </div>
             </RevealOnScroll>
 
-            {/* Visual Illustration - Abstract Orbit */}
-            <RevealOnScroll delay={200} className="flex justify-center items-center relative">
-               {/* Outer glow */}
-               <div className="absolute w-64 h-64 bg-orange-600/20 blur-[80px] rounded-full animate-pulse"></div>
+            {/* Visual Illustration - Dev Sun */}
+            <RevealOnScroll delay={200} className="flex justify-center items-center relative order-1 md:order-2">
+               {/* Background Atmosphere Glow */}
+               <div className="absolute w-80 h-80 bg-orange-600/20 blur-[100px] rounded-full animate-pulse"></div>
                
-               {/* Orbit container */}
-               <div className="relative w-72 h-72 md:w-96 md:h-96 border border-white/10 rounded-full flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-slate-800 border border-slate-600 rounded-full"></div>
-                  
-                  {/* Inner Circle */}
-                  <div className="w-48 h-48 md:w-64 md:h-64 border border-orange-500/30 rounded-full flex items-center justify-center">
-                    {/* Core */}
-                    <div className="w-24 h-24 bg-gradient-to-br from-orange-500 to-amber-700 rounded-full shadow-[0_0_30px_rgba(249,115,22,0.4)] flex items-center justify-center hover:scale-110 transition-transform duration-700 cursor-pointer">
-                      <Rocket className="w-10 h-10 text-white opacity-90" />
-                    </div>
-                  </div>
+               {/* Outer Orbit Ring */}
+               <div className="absolute w-96 h-96 border border-white/5 rounded-full animate-[spin_30s_linear_infinite]">
+                  {/* Tiny Satellite */}
+                  <div className="absolute top-1/2 -right-1.5 w-3 h-3 bg-slate-400 rounded-full"></div>
+               </div>
+
+               {/* Inner Orbit Ring */}
+               <div className="absolute w-72 h-72 border border-orange-500/20 rounded-full animate-[spin_20s_linear_infinite_reverse]">
+                  {/* Orbiting Electron/Planet */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-orange-400 rounded-full shadow-[0_0_15px_rgba(251,146,60,0.8)]"></div>
+               </div>
+               
+               {/* The Sun / Core */}
+               <div className="relative w-48 h-48 rounded-full flex items-center justify-center group">
+                 {/* Sun Body with Gradient */}
+                 <div className="absolute inset-0 bg-gradient-to-br from-orange-400 via-orange-600 to-red-700 rounded-full shadow-[0_0_50px_rgba(234,88,12,0.5)] animate-pulse"></div>
+                 
+                 {/* Sun Surface Detail (Pseudo-noise) */}
+                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 rounded-full mix-blend-overlay"></div>
+
+                 {/* Dev Element: The Core Code Symbol with Slash */}
+                 <div className="relative z-10 transform transition-transform duration-700 group-hover:scale-110 group-hover:rotate-6">
+                   <CodeSlashIcon size={64} className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" strokeWidth={2.5} />
+                 </div>
                </div>
             </RevealOnScroll>
           </div>
@@ -285,9 +314,19 @@ const App = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-4">Frontend</h3>
                 <div className="flex flex-wrap gap-2">
-                  {['React', 'Vue.js', 'Bootstrap', 'TypeScript', 'Tailwind CSS', 'HTML', 'CSS', 'JS'].map(skill => (
-                    <span key={skill} className="px-3 py-1 bg-slate-900 text-slate-400 text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors">
-                      {skill}
+                  {[
+                    { name: 'React', icon: <FaReact className="text-blue-400" /> },
+                    { name: 'Vue.js', icon: <FaVuejs className="text-green-500" /> },
+                    { name: 'Bootstrap', icon: <FaBootstrap className="text-purple-600" /> },
+                    { name: 'TypeScript', icon: <SiTypescript className="text-blue-600" /> },
+                    { name: 'Tailwind CSS', icon: <SiTailwindcss className="text-cyan-400" /> },
+                    { name: 'HTML', icon: <FaHtml5 className="text-orange-500" /> },
+                    { name: 'CSS', icon: <FaCss3Alt className="text-blue-500" /> },
+                    { name: 'JS', icon: <SiJavascript className="text-yellow-400" /> }
+                  ].map(skill => (
+                    <span key={skill.name} className="px-3 py-1 bg-slate-900 text-slate-400 text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors flex items-center gap-2">
+                      {skill.icon}
+                      {skill.name}
                     </span>
                   ))}
                 </div>
@@ -302,9 +341,16 @@ const App = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-4">Backend</h3>
                 <div className="flex flex-wrap gap-2">
-                  {['PHP', 'Node.js', 'MySQL', 'Python', 'PostgreSQL'].map(skill => (
-                    <span key={skill} className="px-3 py-1 bg-slate-900 text-slate-400 text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors">
-                      {skill}
+                  {[
+                    { name: 'PHP', icon: <FaPhp className="text-indigo-400" /> },
+                    { name: 'Node.js', icon: <FaNodeJs className="text-green-500" /> },
+                    { name: 'MySQL', icon: <SiMysql className="text-blue-400" /> },
+                    { name: 'Python', icon: <FaPython className="text-yellow-300" /> },
+                    { name: 'PostgreSQL', icon: <SiPostgresql className="text-blue-300" /> }
+                  ].map(skill => (
+                    <span key={skill.name} className="px-3 py-1 bg-slate-900 text-slate-400 text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors flex items-center gap-2">
+                      {skill.icon}
+                      {skill.name}
                     </span>
                   ))}
                 </div>
@@ -319,9 +365,19 @@ const App = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-4">Outils & Design</h3>
                 <div className="flex flex-wrap gap-2">
-                  {['Git', 'Figma', 'FileZilla', 'Vercel', 'Linux', 'Agile', 'Trello', 'Lottie'].map(skill => (
-                    <span key={skill} className="px-3 py-1 bg-slate-900 text-slate-400 text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors">
-                      {skill}
+                  {[
+                    { name: 'Git', icon: <FaGitAlt className="text-orange-600" /> },
+                    { name: 'Figma', icon: <FaFigma className="text-pink-500" /> },
+                    { name: 'FileZilla', icon: <SiFilezilla className="text-red-700" /> },
+                    { name: 'Vercel', icon: <SiVercel className="text-white" /> },
+                    { name: 'Linux', icon: <FaLinux className="text-yellow-500" /> },
+                    { name: 'Agile', icon: <FaTasks className="text-blue-400" /> },
+                    { name: 'Trello', icon: <FaTrello className="text-blue-600" /> },
+                    { name: 'Lottie', icon: <FaFilm className="text-teal-400" /> }
+                  ].map(skill => (
+                    <span key={skill.name} className="px-3 py-1 bg-slate-900 text-slate-400 text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors flex items-center gap-2">
+                      {skill.icon}
+                      {skill.name}
                     </span>
                   ))}
                 </div>
@@ -347,7 +403,7 @@ const App = () => {
                 stack: ["React", "Symfony", "TypeScript", "PHP", "JS", "MySQL", "Tailwind CSS"],
                 color: "bg-blue-900",
                 imageUrl: "/public/HJczyxRkXT.png",
-                demoLink: "#",
+                demoLink: "https://innovshopp.alwaysdata.net/",
                 githubLink: "https://github.com/Wandalf-dev/InnovShopp.git"
               },
               { 
@@ -513,6 +569,7 @@ const App = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
+                      minLength={3}
                       className="w-full bg-[#0b0e1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all"
                       placeholder="Voyageur"
                     />
@@ -525,6 +582,7 @@ const App = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
+                      pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                       className="w-full bg-[#0b0e1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all"
                       placeholder="email@galaxie.com"
                     />
@@ -539,6 +597,7 @@ const App = () => {
                     value={formData.message}
                     onChange={handleChange}
                     required
+                    minLength={10}
                     className="w-full bg-[#0b0e1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all resize-none"
                     placeholder="J'ai une mission pour vous..."
                   ></textarea>
