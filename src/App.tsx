@@ -172,19 +172,19 @@ const App = () => {
   ];
 
   return (
-    <div className="min-h-screen text-slate-300 font-sans selection:bg-orange-500/30 selection:text-orange-200 relative">
+    <div className="min-h-screen text-slate-300 font-sans selection:bg-orange-500/30 selection:text-orange-200 relative overflow-x-hidden">
       <StarBackground />
 
       {/* --- HEADER --- */}
       <header 
         className={`fixed top-0 w-full z-50 transition-all duration-500 border-b ${
           scrolled 
-            ? 'bg-[#050814]/90 backdrop-blur-md border-white/5 py-4 shadow-lg shadow-orange-900/5' 
-            : 'bg-transparent border-transparent py-6'
+            ? 'bg-[#050814]/90 backdrop-blur-md border-white/5 py-3 md:py-4 shadow-lg shadow-orange-900/5' 
+            : 'bg-transparent border-transparent py-4 md:py-6'
         }`}
       >
         <div className="container mx-auto px-6 md:px-12 max-w-6xl flex justify-between items-center">
-          <div className="text-2xl font-bold tracking-tighter text-white flex items-center gap-2 group cursor-pointer">
+          <div className="text-xl md:text-2xl font-bold tracking-tighter text-white flex items-center gap-2 group cursor-pointer">
             <span className="group-hover:text-orange-400 transition-colors">PortFolio.</span>
           </div>
 
@@ -204,21 +204,23 @@ const App = () => {
 
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden text-slate-300 hover:text-orange-400 transition-transform active:scale-90"
+            className="md:hidden text-slate-300 hover:text-orange-400 transition-transform active:scale-90 p-1"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Menu"
           >
-            {isMenuOpen ? <X /> : <Menu />}
+            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
 
         {/* Mobile Nav Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-[#0b0e1a] border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl animate-in slide-in-from-top-5 fade-in duration-300">
-            {navLinks.map((link) => (
+          <div className="md:hidden absolute top-full left-0 w-full bg-[#0b0e1a]/95 backdrop-blur-xl border-b border-white/10 p-6 flex flex-col gap-6 shadow-2xl overflow-hidden">
+            {navLinks.map((link, index) => (
               <a 
                 key={link.name} 
                 href={link.href} 
-                className="text-lg text-slate-300 hover:text-orange-400 pl-2 border-l-2 border-transparent hover:border-orange-500 transition-all"
+                className="text-xl font-medium text-slate-300 hover:text-orange-400 pl-4 border-l-2 border-transparent hover:border-orange-500 transition-all py-1 transform opacity-0 animate-[slideInFromLeft_0.3s_ease-out_forwards]"
+                style={{ animationDelay: `${index * 80}ms` }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.name}
@@ -231,10 +233,10 @@ const App = () => {
       <main className="relative z-10">
         
         {/* --- HERO SECTION --- */}
-        <section id="home" className="min-h-screen flex flex-col justify-center pt-20 pb-10 container mx-auto px-6 md:px-12 max-w-6xl">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <RevealOnScroll className="space-y-8 order-2 md:order-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-400 text-sm font-medium hover:bg-orange-500/20 transition-colors cursor-default">
+        <section id="home" className="min-h-screen flex flex-col justify-center pt-24 pb-12 md:pt-20 md:pb-10 container mx-auto px-6 md:px-12 max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+            <RevealOnScroll className="space-y-8 md:space-y-10 order-2 md:order-1 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-400 text-xs md:text-sm font-medium hover:bg-orange-500/20 transition-colors cursor-default mx-auto md:mx-0">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
@@ -242,45 +244,45 @@ const App = () => {
                 Disponible pour des missions
               </div>
               
-              <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-tight">
                 Développeur <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-600">Full-Stack</span>
               </h1>
               
-              <p className="text-lg text-slate-400 max-w-lg leading-relaxed">
+              <p className="text-base md:text-lg text-slate-400 max-w-lg leading-relaxed mx-auto md:mx-0">
                 Je conçois des expériences numériques robustes et élégantes.
                 À la frontière entre l'ingénierie logicielle et le design interactif.
               </p>
               
-              <div className="flex flex-wrap gap-4">
-                <a href="#contact" className="px-8 py-3 bg-orange-600 hover:bg-orange-500 text-white font-medium rounded-lg transition-all duration-300 hover:shadow-[0_0_25px_rgba(234,88,12,0.4)] hover:-translate-y-1 active:translate-y-0">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <a href="#contact" className="px-8 py-3 bg-orange-600 hover:bg-orange-500 text-white font-medium rounded-lg transition-all duration-300 hover:shadow-[0_0_25px_rgba(234,88,12,0.4)] hover:-translate-y-1 active:translate-y-0 text-center">
                   Me contacter
                 </a>
-                <a href="#projects" className="px-8 py-3 border border-slate-700 hover:border-orange-500 text-slate-300 hover:text-orange-400 font-medium rounded-lg transition-all duration-300 hover:bg-orange-500/10 hover:-translate-y-1 active:translate-y-0">
+                <a href="#projects" className="px-8 py-3 border border-slate-700 hover:border-orange-500 text-slate-300 hover:text-orange-400 font-medium rounded-lg transition-all duration-300 hover:bg-orange-500/10 hover:-translate-y-1 active:translate-y-0 text-center">
                   Voir mes projets
                 </a>
               </div>
             </RevealOnScroll>
 
             {/* Visual Illustration - Dev Sun */}
-            <RevealOnScroll delay={200} className="flex justify-center items-center relative order-1 md:order-2">
+            <RevealOnScroll delay={200} className="flex justify-center items-center relative order-1 md:order-2 -mt-8 md:mt-0 pb-12 md:pb-0">
                {/* Background Atmosphere Glow */}
-               <div className="absolute w-80 h-80 bg-orange-600/20 blur-[100px] rounded-full animate-pulse"></div>
+               <div className="absolute w-64 md:w-80 h-64 md:h-80 bg-orange-600/20 blur-[100px] rounded-full animate-pulse"></div>
                
                {/* Outer Orbit Ring */}
-               <div className="absolute w-96 h-96 border border-white/5 rounded-full animate-[spin_30s_linear_infinite]">
+               <div className="absolute w-[280px] md:w-96 h-[280px] md:h-96 border border-white/5 rounded-full animate-[spin_30s_linear_infinite]">
                   {/* Tiny Satellite */}
                   <div className="absolute top-1/2 -right-1.5 w-3 h-3 bg-slate-400 rounded-full"></div>
                </div>
 
                {/* Inner Orbit Ring */}
-               <div className="absolute w-72 h-72 border border-orange-500/20 rounded-full animate-[spin_20s_linear_infinite_reverse]">
+               <div className="absolute w-56 md:w-72 h-56 md:h-72 border border-orange-500/20 rounded-full animate-[spin_20s_linear_infinite_reverse]">
                   {/* Orbiting Electron/Planet */}
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-orange-400 rounded-full shadow-[0_0_15px_rgba(251,146,60,0.8)]"></div>
                </div>
                
                {/* The Sun / Core */}
-               <div className="relative w-48 h-48 rounded-full flex items-center justify-center group">
+               <div className="relative w-32 md:w-48 h-32 md:h-48 rounded-full flex items-center justify-center group">
                  {/* Sun Body with Gradient */}
                  <div className="absolute inset-0 bg-gradient-to-br from-orange-400 via-orange-600 to-red-700 rounded-full shadow-[0_0_50px_rgba(234,88,12,0.5)] animate-pulse"></div>
                  
@@ -289,7 +291,7 @@ const App = () => {
 
                  {/* Dev Element: The Core Code Symbol with Slash */}
                  <div className="relative z-10 transform transition-transform duration-700 group-hover:scale-110 group-hover:rotate-6">
-                   <CodeSlashIcon size={64} className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" strokeWidth={2.5} />
+                   <CodeSlashIcon size={48} className="md:w-16 md:h-16 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" strokeWidth={2.5} />
                  </div>
                </div>
             </RevealOnScroll>
@@ -297,18 +299,18 @@ const App = () => {
         </section>
 
         {/* --- SKILLS SECTION --- */}
-        <section id="skills" className="py-24 container mx-auto px-6 md:px-12 max-w-6xl">
-          <RevealOnScroll className="mb-16">
+        <section id="skills" className="py-16 md:py-24 container mx-auto px-6 md:px-12 max-w-6xl">
+          <RevealOnScroll className="mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 flex items-center gap-3">
               <Cpu className="text-orange-500" /> Compétences
             </h2>
             <div className="h-1 w-20 bg-gradient-to-r from-orange-500 to-transparent rounded-full"></div>
           </RevealOnScroll>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             {/* Frontend Card */}
             <RevealOnScroll delay={100} className="h-full">
-              <div className="h-full bg-[#0b0e1a] border border-white/5 p-8 rounded-2xl hover:border-orange-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-900/10 group">
+              <div className="h-full bg-[#0b0e1a] border border-white/5 p-6 md:p-8 rounded-2xl hover:border-orange-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-900/10 group">
                 <div className="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center mb-6 group-hover:bg-orange-500/10 transition-colors duration-300">
                   <Layers className="text-orange-400 w-6 h-6" />
                 </div>
@@ -324,7 +326,7 @@ const App = () => {
                     { name: 'CSS', icon: <FaCss3Alt className="text-blue-500" /> },
                     { name: 'JS', icon: <SiJavascript className="text-yellow-400" /> }
                   ].map(skill => (
-                    <span key={skill.name} className="px-3 py-1 bg-slate-900 text-slate-400 text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors flex items-center gap-2">
+                    <span key={skill.name} className="px-3 py-1 bg-slate-900 text-slate-400 text-xs md:text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors flex items-center gap-2">
                       {skill.icon}
                       {skill.name}
                     </span>
@@ -335,7 +337,7 @@ const App = () => {
 
             {/* Backend Card */}
             <RevealOnScroll delay={200} className="h-full">
-              <div className="h-full bg-[#0b0e1a] border border-white/5 p-8 rounded-2xl hover:border-orange-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-900/10 group">
+              <div className="h-full bg-[#0b0e1a] border border-white/5 p-6 md:p-8 rounded-2xl hover:border-orange-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-900/10 group">
                 <div className="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center mb-6 group-hover:bg-orange-500/10 transition-colors duration-300">
                   <Database className="text-orange-400 w-6 h-6" />
                 </div>
@@ -348,7 +350,7 @@ const App = () => {
                     { name: 'Python', icon: <FaPython className="text-yellow-300" /> },
                     { name: 'PostgreSQL', icon: <SiPostgresql className="text-blue-300" /> }
                   ].map(skill => (
-                    <span key={skill.name} className="px-3 py-1 bg-slate-900 text-slate-400 text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors flex items-center gap-2">
+                    <span key={skill.name} className="px-3 py-1 bg-slate-900 text-slate-400 text-xs md:text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors flex items-center gap-2">
                       {skill.icon}
                       {skill.name}
                     </span>
@@ -359,7 +361,7 @@ const App = () => {
 
             {/* Tools Card */}
             <RevealOnScroll delay={300} className="h-full">
-              <div className="h-full bg-[#0b0e1a] border border-white/5 p-8 rounded-2xl hover:border-orange-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-900/10 group">
+              <div className="h-full bg-[#0b0e1a] border border-white/5 p-6 md:p-8 rounded-2xl hover:border-orange-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-900/10 group">
                 <div className="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center mb-6 group-hover:bg-orange-500/10 transition-colors duration-300">
                   <Terminal className="text-orange-400 w-6 h-6" />
                 </div>
@@ -375,7 +377,7 @@ const App = () => {
                     { name: 'Trello', icon: <FaTrello className="text-blue-600" /> },
                     { name: 'Lottie', icon: <FaFilm className="text-teal-400" /> }
                   ].map(skill => (
-                    <span key={skill.name} className="px-3 py-1 bg-slate-900 text-slate-400 text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors flex items-center gap-2">
+                    <span key={skill.name} className="px-3 py-1 bg-slate-900 text-slate-400 text-xs md:text-sm rounded border border-slate-800 hover:border-orange-500/30 transition-colors flex items-center gap-2">
                       {skill.icon}
                       {skill.name}
                     </span>
@@ -387,22 +389,22 @@ const App = () => {
         </section>
 
         {/* --- PROJECTS SECTION --- */}
-        <section id="projects" className="py-24 bg-[#080a12]/50 container mx-auto px-6 md:px-12 max-w-6xl">
-          <RevealOnScroll className="mb-16">
+        <section id="projects" className="py-16 md:py-24 bg-[#080a12]/50 container mx-auto px-6 md:px-12 max-w-6xl">
+          <RevealOnScroll className="mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 flex items-center gap-3">
               <Code className="text-orange-500" /> Projets Récents
             </h2>
             <div className="h-1 w-20 bg-gradient-to-r from-orange-500 to-transparent rounded-full"></div>
           </RevealOnScroll>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
               { 
                 title: "InnovShop", 
                 desc: "Site e-commerce innovant avec marketplace intégrée.",
                 stack: ["React", "Symfony", "TypeScript", "PHP", "JS", "MySQL", "Tailwind CSS"],
                 color: "bg-blue-900",
-                imageUrl: "/public/HJczyxRkXT.png",
+                imageUrl: "/HJczyxRkXT.png",
                 demoLink: "https://innovshopp.alwaysdata.net/",
                 githubLink: "https://github.com/Wandalf-dev/InnovShopp.git"
               },
@@ -411,7 +413,7 @@ const App = () => {
                 desc: "Plateforme de gestion de rendez-vous dentaire avec planning dynamique.",
                 stack: ["PHP", "JS", "CSS", "HTML"],
                 color: "bg-orange-900",
-                imageUrl: "/public/74QwSDgoNO.png",
+                imageUrl: "/74QwSDgoNO.png",
                 demoLink: "https://dupontcare.wuaze.com/index.php",
                 githubLink: "https://github.com/Wandalf-dev/CabinetDupont.git"
               },
@@ -420,7 +422,7 @@ const App = () => {
                 desc: "Site vitrine d'agence écologique mettant en avant des projets durables.",
                 stack: ["HTML", "JS", "CSS"],
                 color: "bg-emerald-900",
-                imageUrl: "/public/OqvulqpAJi.png",
+                imageUrl: "/OqvulqpAJi.png",
                 demoLink: "https://agenc-eco.alwaysdata.net/",
                 githubLink: "https://github.com/Wandalf-dev/agenceco-website.git"
               }
@@ -428,7 +430,7 @@ const App = () => {
               <RevealOnScroll key={index} delay={index * 150} className="h-full">
                 <div className="group bg-[#0b0e1a] border border-white/5 rounded-xl overflow-hidden hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-orange-900/10 h-full flex flex-col">
                   {/* Project Image */}
-                  <div className={`h-48 ${project.color} relative overflow-hidden flex-shrink-0`}>
+                  <div className={`h-40 md:h-48 ${project.color} relative overflow-hidden flex-shrink-0`}>
                     {project.imageUrl ? (
                       <>
                         <img 
@@ -449,8 +451,8 @@ const App = () => {
                     )}
                   </div>
                   
-                  <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-orange-400 transition-colors">{project.title}</h3>
+                  <div className="p-5 md:p-6 flex flex-col flex-grow">
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-2 group-hover:text-orange-400 transition-colors">{project.title}</h3>
                     <p className="text-slate-400 text-sm mb-4 line-clamp-2">{project.desc}</p>
                     
                     <div className="flex flex-wrap gap-2 mb-6">
@@ -477,7 +479,7 @@ const App = () => {
           
           <div className="mt-12 text-center">
              <RevealOnScroll delay={300}>
-               <a href="#" className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 transition-colors font-medium group hover:tracking-wide duration-300">
+               <a href="https://github.com/Wandalf-dev" className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 transition-colors font-medium group hover:tracking-wide duration-300">
                  Voir plus sur GitHub 
                  <span className="group-hover:translate-x-1 transition-transform">→</span>
                </a>
@@ -486,32 +488,32 @@ const App = () => {
         </section>
 
         {/* --- ABOUT SECTION --- */}
-        <section id="about" className="py-24 container mx-auto px-6 md:px-12 max-w-6xl">
+        <section id="about" className="py-16 md:py-24 container mx-auto px-6 md:px-12 max-w-6xl">
           <RevealOnScroll>
-            <div className="bg-[#0b0e1a] border border-white/5 rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden hover:border-orange-500/20 transition-colors duration-500">
+            <div className="bg-[#0b0e1a] border border-white/5 rounded-2xl p-6 md:p-12 flex flex-col md:flex-row items-center gap-8 md:gap-12 relative overflow-hidden hover:border-orange-500/20 transition-colors duration-500">
               {/* Decorative bg blob */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
               <div className="md:w-1/3 relative">
-                <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-[#1a1e2e] shadow-2xl relative z-10 mx-auto transform hover:scale-105 transition-transform duration-500">
+                <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-[#1a1e2e] shadow-2xl relative z-10 mx-auto transform hover:scale-105 transition-transform duration-500">
                   <img 
-                    src="/public/67506752363__658731F0-BE4B-4CFE-8610-E1652F445A9D.fullsizerender.JPG" 
+                    src="/67506752363__658731F0-BE4B-4CFE-8610-E1652F445A9D.fullsizerender.JPG" 
                     alt="Profile" 
                     className="w-full h-full object-cover object-top"
                   />
                 </div>
                 {/* Orbit ring around avatar */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 md:w-72 md:h-72 border border-orange-500/20 rounded-full animate-[spin_30s_linear_infinite]"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 md:w-72 md:h-72 border border-orange-500/20 rounded-full animate-[spin_30s_linear_infinite]"></div>
               </div>
 
-              <div className="md:w-2/3 text-center md:text-left space-y-6">
-                <h2 className="text-3xl font-bold text-white">Explorateur du Web</h2>
-                <p className="text-slate-400 leading-relaxed">
+              <div className="md:w-2/3 text-center md:text-left space-y-4 md:space-y-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-white">Explorateur du Web</h2>
+                <p className="text-sm md:text-base text-slate-400 leading-relaxed">
                   Je suis un développeur junior passionné par la création d'interfaces intuitives et performantes. 
                   Comme un astronaute prépare sa mission, j'accorde une importance capitale à la préparation 
                   et à la qualité du code.
                 </p>
-                <p className="text-slate-400 leading-relaxed">
+                <p className="text-sm md:text-base text-slate-400 leading-relaxed">
                   Mon approche combine rigueur technique et sensibilité créative. Je suis à l'aise 
                   aussi bien en autonomie sur des problèmes complexes qu'au sein d'un équipage pour 
                   faire décoller des projets ambitieux.
@@ -527,12 +529,12 @@ const App = () => {
         </section>
 
         {/* --- CONTACT SECTION --- */}
-        <section id="contact" className="py-24 container mx-auto px-6 md:px-12 max-w-6xl">
-          <div className="grid md:grid-cols-2 gap-16">
-            <RevealOnScroll className="space-y-8">
+        <section id="contact" className="py-16 md:py-24 container mx-auto px-6 md:px-12 max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16">
+            <RevealOnScroll className="space-y-6 md:space-y-8">
               <div>
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Initialisons la communication</h2>
-                <p className="text-slate-400">
+                <p className="text-sm md:text-base text-slate-400">
                   Un projet en tête ? Une question sur mon stack technique ? 
                   Ou simplement envie de discuter d'exploration spatiale ? 
                   N'hésitez pas à m'envoyer un signal.
@@ -540,18 +542,18 @@ const App = () => {
               </div>
 
               <div className="space-y-4">
-                <a href="mailto:contact@example.com" className="flex items-center gap-4 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 transition-all group hover:scale-[1.02] hover:bg-white/5">
+                <a href="mailto:contact@freelance-lm.fr" className="flex items-center gap-4 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 transition-all group hover:scale-[1.02] hover:bg-white/5">
                   <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
                     <Mail size={20} />
                   </div>
-                  <span className="text-slate-300 group-hover:text-white transition-colors">contact@monportfolio.dev</span>
+                  <span className="text-slate-300 group-hover:text-white transition-colors break-all">contact@freelance-lm.fr</span>
                 </a>
                 
                 <div className="flex gap-4">
-                  <a href="#" className="flex-1 flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
+                  <a href="https://www.linkedin.com/in/lou-marche-90b988249/" className="flex-1 flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
                     <Linkedin size={20} /> LinkedIn
                   </a>
-                  <a href="#" className="flex-1 flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
+                  <a href="https://github.com/Wandalf-dev" className="flex-1 flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
                     <Github size={20} /> GitHub
                   </a>
                 </div>
@@ -560,7 +562,7 @@ const App = () => {
 
             <RevealOnScroll delay={200}>
               <form className="space-y-4" onSubmit={handleSubmit}>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm text-slate-400 ml-1">Nom</label>
                     <input 
@@ -640,7 +642,7 @@ const App = () => {
         <div className="container mx-auto px-6 text-center md:flex md:justify-between md:items-center max-w-6xl">
           <div className="mb-4 md:mb-0">
             <span className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} DevWalker. Conçu pour l'exploration.
+              © {new Date().getFullYear()} Portfolio. Conçu pour l'exploration.
             </span>
           </div>
           <div className="flex justify-center gap-6">
