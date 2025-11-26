@@ -2,6 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide default cursor on desktop when custom cursor is active */
+@media (min-width: 768px) {
+  * {
+    cursor: none !important;
+  }
+
+  a, button, input, textarea, select {
+    cursor: none !important;
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #030508;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ea580c, #f59e0b);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #f97316, #fbbf24);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ea580c #030508;
+}
+
 @keyframes slideInFromLeft {
   0% {
     opacity: 0;
@@ -11,4 +66,25 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* Glow effect for interactive elements */
+.glow-on-hover {
+  transition: all 0.3s ease;
+}
+
+.glow-on-hover:hover {
+  box-shadow: 0 0 20px rgba(234, 88, 12, 0.4);
+}
+
+/* Text selection styling enhancement */
+::selection {
+  background: rgba(234, 88, 12, 0.3);
+  color: #fed7aa;
+}
+
+/* Focus visible styles for accessibility */
+:focus-visible {
+  outline: 2px solid #ea580c;
+  outline-offset: 2px;
 }
