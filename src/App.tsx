@@ -847,7 +847,7 @@ const App = () => {
         <section id="home" className="min-h-screen flex flex-col justify-center pt-24 pb-12 md:pt-20 md:pb-10 container mx-auto px-6 md:px-12 max-w-6xl">
           <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
             <RevealOnScroll className="space-y-8 md:space-y-10 order-2 md:order-1 text-center md:text-left">
-              <a href="https://www.malt.fr/profile/loumarche1" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-400 text-xs md:text-sm font-medium hover:bg-orange-500/20 hover:border-orange-500/50 transition-colors cursor-pointer mx-auto md:mx-0">
+              <a href="https://www.malt.fr/profile/loumarche1" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-400 text-xs md:text-sm font-medium hover:bg-orange-500/20 hover:border-orange-500/50 transition-colors cursor-pointer mx-auto md:mx-0 mt-8 md:mt-0">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
@@ -878,7 +878,7 @@ const App = () => {
             </RevealOnScroll>
 
             {/* Visual Illustration - Dev Solar System */}
-            <RevealOnScroll delay={200} className="flex justify-center items-center relative order-1 md:order-2 -mt-8 md:mt-0 pb-12 md:pb-0">
+            <RevealOnScroll delay={200} className="flex justify-center items-center relative order-1 md:order-2 mt-8 md:mt-0 pb-16 md:pb-0">
                {/* Background Atmosphere Glow - Multi-layered */}
                <div className="absolute w-72 md:w-96 h-72 md:h-96 bg-orange-500/10 blur-[120px] rounded-full"></div>
                <div className="absolute w-56 md:w-72 h-56 md:h-72 bg-amber-500/15 blur-[80px] rounded-full animate-[pulse_4s_ease-in-out_infinite]"></div>
@@ -920,7 +920,7 @@ const App = () => {
                </InteractiveOrbit>
 
                {/* The Sun / Core */}
-               <div className="relative w-28 md:w-36 h-28 md:h-36 rounded-full flex items-center justify-center group cursor-pointer">
+               <div className="relative w-24 md:w-36 h-24 md:h-36 rounded-full flex items-center justify-center group cursor-pointer">
                  {/* Outer glow ring */}
                  <div className="absolute -inset-3 md:-inset-4 bg-gradient-to-r from-orange-500/20 via-amber-500/10 to-orange-500/20 rounded-full blur-xl animate-[pulse_3s_ease-in-out_infinite]"></div>
 
