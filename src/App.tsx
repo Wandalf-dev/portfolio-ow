@@ -395,7 +395,7 @@ const ScrollProgressBar = () => {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-full h-1 z-[100] bg-transparent">
+    <div className="fixed top-0 left-0 w-full h-1 z-[202] bg-transparent pointer-events-none">
       <div
         ref={progressRef}
         className="h-full w-full origin-left bg-gradient-to-r from-orange-500 via-orange-400 to-amber-500 shadow-[0_0_10px_rgba(234,88,12,0.5)]"
