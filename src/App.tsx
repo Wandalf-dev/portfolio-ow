@@ -115,6 +115,8 @@ const StarBackground = () => {
   const shootingStarsRef = useRef<ShootingStar[]>([]);
   const animationRef = useRef<number>(0);
   const lastShootingStarRef = useRef<number>(0);
+  const lastSizeRef = useRef({ width: 0, height: 0 });
+  const resizeTimeoutRef = useRef<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -131,12 +133,15 @@ const StarBackground = () => {
     // Redimensionner le canvas avec pixel ratio pour netteté
     const dpr = window.devicePixelRatio || 1;
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
+      lastSizeRef.current = { width, height };
     };
     resizeCanvas();
 
@@ -157,7 +162,11 @@ const StarBackground = () => {
       }
       return stars;
     };
-    starsRef.current = generateStars();
+
+    // Générer les étoiles seulement si pas déjà fait
+    if (starsRef.current.length === 0) {
+      starsRef.current = generateStars();
+    }
 
     // Créer une étoile filante
     const createShootingStar = (): ShootingStar => {
@@ -265,10 +274,27 @@ const StarBackground = () => {
 
     animationRef.current = requestAnimationFrame(animate);
 
-    // Régénérer au resize
+    // Régénérer au resize avec debounce et vérification de changement réel
     const handleResize = () => {
-      resizeCanvas();
-      starsRef.current = generateStars();
+      // Annuler le timeout précédent
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+
+      // Debounce de 300ms pour éviter les appels multiples (Safari pull-to-refresh)
+      resizeTimeoutRef.current = window.setTimeout(() => {
+        const newWidth = window.innerWidth;
+        const newHeight = window.innerHeight;
+
+        // Ne régénérer que si la taille a vraiment changé de plus de 50px
+        const widthDiff = Math.abs(newWidth - lastSizeRef.current.width);
+        const heightDiff = Math.abs(newHeight - lastSizeRef.current.height);
+
+        if (widthDiff > 50 || heightDiff > 50) {
+          resizeCanvas();
+          starsRef.current = generateStars();
+        }
+      }, 300);
     };
     window.addEventListener('resize', handleResize);
 
@@ -276,6 +302,9 @@ const StarBackground = () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationRef.current);
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -602,7 +631,7 @@ const InteractiveOrbit = ({ size, sizeMd, duration, borderClass, children }: Int
   );
 };
 
-// Composant pour l'effet Tilt 3D sur les cartes
+// Composant pour l'effet Tilt 3D sur les cartes (desktop uniquement)
 interface TiltCardProps {
   children: React.ReactNode;
   className?: string;
@@ -610,8 +639,17 @@ interface TiltCardProps {
 
 const TiltCard = ({ children, className = "" }: TiltCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    // Détecter si c'est un appareil tactile
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Désactiver l'effet sur les appareils tactiles
+    if (isTouchDevice) return;
+
     const card = cardRef.current;
     if (!card) return;
 
@@ -628,6 +666,8 @@ const TiltCard = ({ children, className = "" }: TiltCardProps) => {
   };
 
   const handleMouseLeave = () => {
+    if (isTouchDevice) return;
+
     const card = cardRef.current;
     if (card) {
       card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
