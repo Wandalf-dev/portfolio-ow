@@ -729,6 +729,18 @@ const App = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Bloquer le scroll quand le menu mobile est ouvert
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
   const navLinks = [
     { name: 'Accueil', href: '#home' },
     { name: 'Projets', href: '#projects' },
@@ -745,10 +757,10 @@ const App = () => {
       <StarBackground />
 
       {/* --- HEADER --- */}
-      <header 
-        className={`fixed top-0 w-full z-50 transition-all duration-500 border-b ${
-          scrolled 
-            ? 'bg-[#050814]/90 backdrop-blur-md border-white/5 py-3 md:py-4 shadow-lg shadow-orange-900/5' 
+      <header
+        className={`fixed top-0 w-full z-[201] border-b transition-[background-color,padding,border-color,box-shadow] duration-500 ${
+          scrolled
+            ? 'bg-[#050814]/90 backdrop-blur-md border-white/5 py-3 md:py-4 shadow-lg shadow-orange-900/5'
             : 'bg-transparent border-transparent py-4 md:py-6'
         }`}
       >
@@ -771,33 +783,65 @@ const App = () => {
             ))}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden text-slate-300 hover:text-orange-400 transition-transform active:scale-90 p-1"
+          {/* Mobile Menu Button - Animated Hamburger */}
+          <button
+            className="md:hidden relative w-10 h-10 flex items-center justify-center"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Menu"
           >
-            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            <div className="w-6 flex flex-col gap-1.5">
+              <span className={`block h-0.5 rounded-full transition-transform duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2 bg-orange-400' : 'bg-slate-300'}`}></span>
+              <span className={`block h-0.5 rounded-full transition-opacity duration-300 ${isMenuOpen ? 'opacity-0 bg-orange-400' : 'bg-slate-300'}`}></span>
+              <span className={`block h-0.5 rounded-full transition-transform duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2 bg-orange-400' : 'bg-slate-300'}`}></span>
+            </div>
           </button>
         </div>
 
-        {/* Mobile Nav Dropdown */}
-        {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-[#0b0e1a]/95 backdrop-blur-xl border-b border-white/10 p-6 flex flex-col gap-6 shadow-2xl overflow-hidden">
+      </header>
+
+      {/* Mobile Nav - Fullscreen Overlay (outside header for proper z-index) */}
+      <div className={`md:hidden fixed inset-0 z-[200] transition-all duration-300 bg-[#030508] ${isMenuOpen ? 'visible opacity-100' : 'invisible opacity-0 pointer-events-none'}`}>
+        {/* Menu Content */}
+        <div className="h-full flex flex-col justify-center items-center">
+          {/* Navigation Links */}
+          <nav className="flex flex-col items-center gap-8 mb-12">
             {navLinks.map((link, index) => (
-              <a 
-                key={link.name} 
-                href={link.href} 
-                className="text-xl font-medium text-slate-300 hover:text-orange-400 pl-4 border-l-2 border-transparent hover:border-orange-500 transition-all py-1 transform opacity-0 animate-[slideInFromLeft_0.3s_ease-out_forwards]"
-                style={{ animationDelay: `${index * 80}ms` }}
+              <a
+                key={link.name}
+                href={link.href}
+                className={`text-3xl font-bold text-white hover:text-orange-400 transition-all duration-300 relative group ${isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+                style={{ transitionDelay: isMenuOpen ? `${index * 80 + 100}ms` : '0ms' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.name}
+                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-300 group-hover:w-full rounded-full"></span>
               </a>
             ))}
+          </nav>
+
+          {/* Social Links */}
+          <div className={`flex gap-6 transition-all duration-500 ${isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`} style={{ transitionDelay: isMenuOpen ? '500ms' : '0ms' }}>
+            <a href="https://github.com/Wandalf-dev" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-slate-400 hover:text-orange-400 hover:border-orange-500/50 hover:bg-orange-500/10 transition-all">
+              <Github size={20} />
+            </a>
+            <a href="https://www.linkedin.com/in/lou-marche-90b988249/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-slate-400 hover:text-orange-400 hover:border-orange-500/50 hover:bg-orange-500/10 transition-all">
+              <Linkedin size={20} />
+            </a>
+            <a href="https://www.malt.fr/profile/loumarche1" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-slate-400 hover:text-orange-400 hover:border-orange-500/50 hover:bg-orange-500/10 transition-all">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm5.696 14.943c-1.273 2.203-3.88 3.522-6.044 3.522-1.665 0-2.792-.61-3.296-1.222l-.006.01-2.47 4.247H3.387l7.312-12.66c.504-.873 1.273-1.34 2.168-1.34.894 0 1.664.467 2.168 1.34l4.66 8.071v.032z"/>
+              </svg>
+            </a>
+            <a href="mailto:contact@freelance-lm.fr" className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-slate-400 hover:text-orange-400 hover:border-orange-500/50 hover:bg-orange-500/10 transition-all">
+              <Mail size={20} />
+            </a>
           </div>
-        )}
-      </header>
+
+          {/* Decorative Elements */}
+          <div className="absolute top-20 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute bottom-20 right-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        </div>
+      </div>
 
       <main className="relative z-10">
         
