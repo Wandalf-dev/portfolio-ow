@@ -1486,7 +1486,7 @@ const App = () => {
         </section>
 
         {/* --- PROJECTS SECTION --- */}
-        <section id="projects" className="py-16 md:py-24 bg-[#080a12]/50 container mx-auto px-6 md:px-12 max-w-6xl">
+        <section id="projects" className="py-16 md:py-24 container mx-auto px-6 md:px-12 max-w-6xl">
           <RevealOnScroll className="mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 flex items-center gap-3">
               <Code className="text-orange-500" /> Projets Récents
@@ -1527,12 +1527,8 @@ const App = () => {
               <RevealOnScroll key={index} delay={index * 150} className="h-full">
                 <TiltCard className="h-full">
                   <div className="group relative bg-[#0b0e1a]/80 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden h-full flex flex-col transition-all duration-500 hover:shadow-[0_0_30px_rgba(234,88,12,0.15)] hover:border-orange-500/30">
-                    {/* Animated border gradient - desktop only */}
-                    <div className="hidden md:block absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                      <div className="absolute inset-[-2px] rounded-xl bg-gradient-to-r from-orange-500/50 via-amber-500/50 to-orange-500/50 animate-border-spin" style={{ padding: '2px' }}>
-                        <div className="w-full h-full bg-[#0b0e1a] rounded-xl"></div>
-                      </div>
-                    </div>
+                    {/* Subtle border glow on hover - desktop only */}
+                    <div className="hidden md:block absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none border border-orange-500/40"></div>
 
                     {/* Project Image */}
                     <div className={`h-40 md:h-48 ${project.color} relative overflow-hidden flex-shrink-0`}>
