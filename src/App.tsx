@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Github, 
-  Linkedin, 
-  Mail, 
-  Menu, 
-  X, 
-  Code, 
-  Database, 
-  Terminal, 
-  ExternalLink, 
-  Cpu, 
-  Layers, 
+import {
+  Github,
+  Linkedin,
+  Mail,
+  Code,
+  Database,
+  Terminal,
+  ExternalLink,
+  Cpu,
+  Layers,
   Send
 } from 'lucide-react';
 import { 
