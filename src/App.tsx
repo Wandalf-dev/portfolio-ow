@@ -123,8 +123,9 @@ const StarBackground = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Configuration
-    const STAR_COUNT = 120;
+    // Configuration - fewer stars on mobile for cleaner look
+    const isMobile = window.innerWidth < 768;
+    const STAR_COUNT = isMobile ? 60 : 120;
     const PARALLAX_STRENGTH = 0.02;
     const SHOOTING_STAR_INTERVAL = 15000;
 
@@ -148,12 +149,15 @@ const StarBackground = () => {
       const stars: Star[] = [];
       const width = window.innerWidth;
       const height = window.innerHeight;
+      // Smaller stars on mobile for cleaner look
+      const maxSize = isMobile ? 1.0 : 1.5;
+      const maxOpacity = isMobile ? 0.4 : 0.5;
       for (let i = 0; i < STAR_COUNT; i++) {
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          size: Math.random() * 1.5 + 0.3,
-          opacity: Math.random() * 0.5 + 0.2,
+          size: Math.random() * maxSize + 0.3,
+          opacity: Math.random() * maxOpacity + 0.2,
           twinkleSpeed: Math.random() * 0.01 + 0.003,
           twinklePhase: Math.random() * Math.PI * 2
         });
@@ -472,45 +476,78 @@ const TypingEffect = ({ words, className = "" }: { words: string[]; className?: 
   );
 };
 
-// Composant pour une orbite interactive
+// Type pour les phases de la supernova (utilisé par InteractiveOrbit et ExplodingSun)
+type SupernovaPhase = 'idle' | 'warning' | 'contracting' | 'exploding' | 'rebirthing';
+
+// Composant pour une orbite interactive avec support supernova
 interface InteractiveOrbitProps {
   size: string;
   sizeMd: string;
   duration: number;
   borderClass: string;
   children: React.ReactNode;
+  supernovaPhase: SupernovaPhase;
+  orbitIndex: number; // Pour le délai d'animation
 }
 
-const InteractiveOrbit = ({ size, sizeMd, duration, borderClass, children }: InteractiveOrbitProps) => {
-  const [angle, setAngle] = useState(() => Math.random() * 360);
+const InteractiveOrbit = ({ size, sizeMd, duration, borderClass, children, supernovaPhase, orbitIndex }: InteractiveOrbitProps) => {
+  const angleRef = useRef(Math.random() * 360);
+  const frozenAngleRef = useRef(0); // Angle figé au moment de l'explosion
+  const lastPhaseRef = useRef<SupernovaPhase>('idle');
+  const [renderTrigger, setRenderTrigger] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const orbitRef = useRef<HTMLDivElement>(null);
+  const planetRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
+  const phaseRef = useRef(supernovaPhase);
+
+  // Détecter le changement de phase DE MANIÈRE SYNCHRONE (dans le render)
+  if (supernovaPhase !== lastPhaseRef.current) {
+    if (supernovaPhase === 'exploding') {
+      // Figer l'angle IMMÉDIATEMENT (pas dans un useEffect)
+      frozenAngleRef.current = angleRef.current;
+      cancelAnimationFrame(animationRef.current);
+    }
+    if (supernovaPhase === 'rebirthing') {
+      // Nouvelle position aléatoire
+      angleRef.current = Math.random() * 360;
+    }
+    lastPhaseRef.current = supernovaPhase;
+    phaseRef.current = supernovaPhase;
+  }
 
   // Animation automatique
   useEffect(() => {
-    if (isDragging) {
+    const shouldPause = isDragging || supernovaPhase === 'exploding' || supernovaPhase === 'rebirthing';
+    if (shouldPause) {
       lastTimeRef.current = 0;
       return;
     }
 
     const animate = (currentTime: number) => {
+      // Vérifier immédiatement si on doit s'arrêter
+      if (phaseRef.current === 'exploding' || phaseRef.current === 'rebirthing') {
+        return;
+      }
+
       if (lastTimeRef.current === 0) lastTimeRef.current = currentTime;
       const deltaTime = currentTime - lastTimeRef.current;
       lastTimeRef.current = currentTime;
 
       const speed = 360 / (duration * 1000);
-      setAngle(prev => (prev + speed * deltaTime) % 360);
+      angleRef.current = (angleRef.current + speed * deltaTime) % 360;
+      setRenderTrigger(prev => prev + 1);
 
       animationRef.current = requestAnimationFrame(animate);
     };
 
     animationRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationRef.current);
-  }, [isDragging, duration]);
+  }, [isDragging, duration, supernovaPhase]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (supernovaPhase !== 'idle') return;
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
@@ -529,11 +566,11 @@ const InteractiveOrbit = ({ size, sizeMd, duration, borderClass, children }: Int
       const deltaX = e.clientX - centerX;
       const deltaY = e.clientY - centerY;
 
-      // Calcul de l'angle (0° = haut, sens horaire)
       let newAngle = Math.atan2(deltaX, -deltaY) * (180 / Math.PI);
       if (newAngle < 0) newAngle += 360;
 
-      setAngle(newAngle);
+      angleRef.current = newAngle;
+      setRenderTrigger(prev => prev + 1);
     };
 
     const handleMouseUp = () => {
@@ -549,14 +586,12 @@ const InteractiveOrbit = ({ size, sizeMd, duration, borderClass, children }: Int
     };
   }, [isDragging]);
 
-  // Touch events - ref pour le bouton draggable
-  const planetRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const planet = planetRef.current;
     if (!planet) return;
 
     const handleTouchStart = (e: TouchEvent) => {
+      if (supernovaPhase !== 'idle') return;
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(true);
@@ -567,7 +602,7 @@ const InteractiveOrbit = ({ size, sizeMd, duration, borderClass, children }: Int
     return () => {
       planet.removeEventListener('touchstart', handleTouchStart);
     };
-  }, []);
+  }, [supernovaPhase]);
 
   useEffect(() => {
     if (!isDragging) return;
@@ -587,7 +622,8 @@ const InteractiveOrbit = ({ size, sizeMd, duration, borderClass, children }: Int
       let newAngle = Math.atan2(deltaX, -deltaY) * (180 / Math.PI);
       if (newAngle < 0) newAngle += 360;
 
-      setAngle(newAngle);
+      angleRef.current = newAngle;
+      setRenderTrigger(prev => prev + 1);
     };
 
     const handleTouchEnd = () => {
@@ -603,16 +639,86 @@ const InteractiveOrbit = ({ size, sizeMd, duration, borderClass, children }: Int
     };
   }, [isDragging]);
 
+  // Animation de l'éjection de la planète
+  useEffect(() => {
+    if (supernovaPhase !== 'exploding' || !planetRef.current) return;
+
+    // La planète est toujours en "haut" de l'orbite dans l'espace local
+    // Pour partir vers l'extérieur (radialement), elle doit aller vers le haut dans cet espace
+    const distance = 300 + orbitIndex * 100;
+
+    const planet = planetRef.current;
+    planet.animate([
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+      { transform: `translate(-50%, calc(-50% - ${distance}px)) scale(0.2)`, opacity: 0 }
+    ], {
+      duration: 700,
+      delay: orbitIndex * 30,
+      easing: 'cubic-bezier(0.4, 0, 1, 1)',
+      fill: 'forwards'
+    });
+  }, [supernovaPhase, orbitIndex]);
+
+  // Animation du retour de la planète (apparaît directement sur l'orbite)
+  useEffect(() => {
+    if (supernovaPhase !== 'rebirthing' || !planetRef.current) return;
+
+    const planet = planetRef.current;
+    const delay = 500 + (2 - orbitIndex) * 250; // Les orbites internes reviennent en premier
+
+    // La planète apparaît à sa position sur l'orbite (pas de translation)
+    planet.animate([
+      { transform: 'translate(-50%, -50%) scale(0)', opacity: 0 },
+      { transform: 'translate(-50%, -50%) scale(1.3)', opacity: 0.9, offset: 0.5 },
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 }
+    ], {
+      duration: 500,
+      delay: delay,
+      easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      fill: 'forwards'
+    });
+  }, [supernovaPhase, orbitIndex]);
+
+  // Calculer les styles selon la phase
+  const getOrbitStyle = (): React.CSSProperties => {
+    // Pendant l'explosion, utiliser l'angle figé au moment de l'explosion
+    const currentAngle = supernovaPhase === 'exploding' ? frozenAngleRef.current : angleRef.current;
+    const baseTransform = `rotate(${currentAngle}deg)`;
+
+    if (supernovaPhase === 'exploding') {
+      return {
+        transform: baseTransform,
+        animation: `orbit-collapse 0.4s ease-in ${orbitIndex * 30}ms forwards`
+      };
+    }
+
+    if (supernovaPhase === 'rebirthing') {
+      const delay = 400 + (2 - orbitIndex) * 200;
+      return {
+        transform: baseTransform,
+        animation: `orbit-expand 0.7s ease-out ${delay}ms forwards`,
+        opacity: 0
+      };
+    }
+
+    return { transform: baseTransform };
+  };
+
+  const isHidden = supernovaPhase === 'exploding' || supernovaPhase === 'rebirthing';
+
   return (
     <div
       ref={orbitRef}
       className={`absolute ${size} ${sizeMd} ${borderClass} rounded-full`}
-      style={{ transform: `rotate(${angle}deg)` }}
+      style={getOrbitStyle()}
     >
       <div
         ref={planetRef}
-        className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 ${isDragging ? 'cursor-grabbing scale-110' : 'cursor-grab'} transition-transform duration-150 select-none`}
+        className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
+          isDragging ? 'cursor-grabbing scale-110' : 'cursor-grab'
+        } ${isHidden ? '' : 'transition-transform duration-150'} select-none`}
         onMouseDown={handleMouseDown}
+        style={supernovaPhase === 'rebirthing' ? { opacity: 0 } : undefined}
       >
         {children}
       </div>
@@ -671,6 +777,402 @@ const TiltCard = ({ children, className = "" }: TiltCardProps) => {
       onMouseLeave={handleMouseLeave}
     >
       {children}
+    </div>
+  );
+};
+
+// Interface pour les particules de supernova
+interface SupernovaParticle {
+  id: number;
+  angle: number;
+  distance: number;
+  size: number;
+  color: string;
+  delay: number;
+  duration: number;
+  type: 'debris' | 'spark' | 'ember';
+}
+
+// Props pour ExplodingSun
+interface ExplodingSunProps {
+  onPhaseChange?: (phase: SupernovaPhase) => void;
+}
+
+// Composant pour le soleil avec effet Supernova
+const ExplodingSun = ({ onPhaseChange }: ExplodingSunProps) => {
+  const [phase, setPhase] = useState<SupernovaPhase>('idle');
+  const [particles, setParticles] = useState<SupernovaParticle[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Notifier le parent des changements de phase
+  const updatePhase = (newPhase: SupernovaPhase) => {
+    setPhase(newPhase);
+    onPhaseChange?.(newPhase);
+  };
+
+  const triggerSupernova = () => {
+    if (phase !== 'idle') return;
+
+    // Phase 1: Warning - petit pulse
+    updatePhase('warning');
+
+    // Phase 2: Contraction après 400ms
+    setTimeout(() => {
+      updatePhase('contracting');
+    }, 400);
+
+    // Phase 3: Explosion après 1200ms (400 + 800 de contraction)
+    setTimeout(() => {
+      // Générer les particules de supernova
+      const newParticles: SupernovaParticle[] = [];
+
+      // Couleurs de supernova: bleu intense, blanc, cyan, puis orange/rouge pour les débris
+      const coreColors = ['#60a5fa', '#3b82f6', '#93c5fd', '#ffffff', '#e0f2fe'];
+      const debrisColors = ['#fbbf24', '#f97316', '#ea580c', '#dc2626', '#fef3c7'];
+      const sparkColors = ['#06b6d4', '#22d3ee', '#67e8f9', '#a5f3fc', '#ffffff'];
+
+      // Particules de débris stellaires (grosses, lentes)
+      for (let i = 0; i < 16; i++) {
+        newParticles.push({
+          id: i,
+          angle: (i * 22.5) + (Math.random() * 15 - 7.5),
+          distance: 180 + Math.random() * 120,
+          size: 8 + Math.random() * 16,
+          color: debrisColors[Math.floor(Math.random() * debrisColors.length)],
+          delay: Math.random() * 50,
+          duration: 1200 + Math.random() * 400,
+          type: 'debris'
+        });
+      }
+
+      // Étincelles rapides (petites, rapides)
+      for (let i = 0; i < 32; i++) {
+        newParticles.push({
+          id: 100 + i,
+          angle: Math.random() * 360,
+          distance: 120 + Math.random() * 200,
+          size: 2 + Math.random() * 6,
+          color: sparkColors[Math.floor(Math.random() * sparkColors.length)],
+          delay: Math.random() * 100,
+          duration: 600 + Math.random() * 300,
+          type: 'spark'
+        });
+      }
+
+      // Braises du cœur (moyennes, effet de traînée)
+      for (let i = 0; i < 24; i++) {
+        newParticles.push({
+          id: 200 + i,
+          angle: Math.random() * 360,
+          distance: 100 + Math.random() * 150,
+          size: 4 + Math.random() * 8,
+          color: coreColors[Math.floor(Math.random() * coreColors.length)],
+          delay: 50 + Math.random() * 100,
+          duration: 800 + Math.random() * 400,
+          type: 'ember'
+        });
+      }
+
+      setParticles(newParticles);
+      updatePhase('exploding');
+    }, 1200);
+
+    // Phase 4: Renaissance après 2000ms (laisser l'explosion se dissiper un peu)
+    setTimeout(() => {
+      updatePhase('rebirthing');
+    }, 2000);
+
+    // Retour à l'état normal après 4200ms (rebirth dure 2s)
+    setTimeout(() => {
+      updatePhase('idle');
+      setParticles([]);
+    }, 4200);
+  };
+
+  // Animation des particules avec Web Animations API
+  useEffect(() => {
+    if (phase !== 'exploding' || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const particleElements = container.querySelectorAll('.supernova-particle');
+
+    particleElements.forEach((el, index) => {
+      const particle = particles[index];
+      if (!particle) return;
+
+      const htmlEl = el as HTMLElement;
+      const rad = (particle.angle * Math.PI) / 180;
+      const tx = Math.cos(rad) * particle.distance;
+      const ty = Math.sin(rad) * particle.distance;
+
+      // Animation différente selon le type
+      if (particle.type === 'spark') {
+        htmlEl.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${tx * 0.3}px, ${ty * 0.3}px) scale(1.5)`, opacity: 1, offset: 0.2 },
+          { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: particle.duration,
+          delay: particle.delay,
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          fill: 'forwards'
+        });
+      } else if (particle.type === 'debris') {
+        htmlEl.animate([
+          { transform: 'translate(0, 0) scale(0.5) rotate(0deg)', opacity: 1 },
+          { transform: `translate(${tx * 0.2}px, ${ty * 0.2}px) scale(1.2) rotate(90deg)`, opacity: 1, offset: 0.15 },
+          { transform: `translate(${tx * 0.6}px, ${ty * 0.6}px) scale(1) rotate(180deg)`, opacity: 0.8, offset: 0.5 },
+          { transform: `translate(${tx}px, ${ty}px) scale(0.3) rotate(360deg)`, opacity: 0 }
+        ], {
+          duration: particle.duration,
+          delay: particle.delay,
+          easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+          fill: 'forwards'
+        });
+      } else {
+        // ember
+        htmlEl.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1, filter: 'blur(0px)' },
+          { transform: `translate(${tx * 0.5}px, ${ty * 0.5}px) scale(1.3)`, opacity: 0.9, filter: 'blur(1px)', offset: 0.3 },
+          { transform: `translate(${tx}px, ${ty}px) scale(0.2)`, opacity: 0, filter: 'blur(3px)' }
+        ], {
+          duration: particle.duration,
+          delay: particle.delay,
+          easing: 'ease-out',
+          fill: 'forwards'
+        });
+      }
+    });
+  }, [phase, particles]);
+
+  const getSunAnimation = () => {
+    switch (phase) {
+      case 'warning':
+        return 'pre-supernova-pulse 0.4s ease-in-out';
+      case 'contracting':
+        return 'supernova-contract 0.8s cubic-bezier(0.4, 0, 1, 1) forwards';
+      case 'exploding':
+        return 'supernova-explode 0.2s ease-in forwards';
+      case 'rebirthing':
+        return 'supernova-rebirth 2s ease-out forwards';
+      default:
+        return 'none';
+    }
+  };
+
+  return (
+    <div ref={containerRef} className="relative w-20 md:w-36 h-20 md:h-36 flex items-center justify-center">
+
+      {/* ===== EFFETS D'EXPLOSION ===== */}
+
+      {/* Flash bleu intense de supernova */}
+      {phase === 'exploding' && (
+        <>
+          {/* Flash principal bleu/blanc */}
+          <div
+            className="absolute inset-0 rounded-full pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(147,197,253,0.9) 30%, rgba(59,130,246,0.6) 60%, transparent 100%)',
+              animation: 'supernova-flash 0.8s ease-out forwards'
+            }}
+          />
+          {/* Flash secondaire cyan */}
+          <div
+            className="absolute inset-0 rounded-full pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle, rgba(34,211,238,0.8) 0%, rgba(6,182,212,0.4) 40%, transparent 70%)',
+              animation: 'supernova-flash 1s ease-out 0.1s forwards'
+            }}
+          />
+        </>
+      )}
+
+      {/* Ondes de choc multiples */}
+      {phase === 'exploding' && (
+        <>
+          {/* Onde de choc principale - bleue */}
+          <div
+            className="absolute inset-0 border-4 border-blue-400/80 rounded-full pointer-events-none"
+            style={{
+              animation: 'supernova-shockwave 1s ease-out forwards',
+              boxShadow: '0 0 20px rgba(59,130,246,0.6), inset 0 0 20px rgba(59,130,246,0.3)'
+            }}
+          />
+          {/* Onde de choc secondaire - cyan */}
+          <div
+            className="absolute inset-0 border-2 border-cyan-400/60 rounded-full pointer-events-none"
+            style={{ animation: 'supernova-shockwave-2 1.2s ease-out 0.15s forwards' }}
+          />
+          {/* Onde de choc tertiaire - blanche */}
+          <div
+            className="absolute inset-0 border border-white/40 rounded-full pointer-events-none"
+            style={{ animation: 'supernova-shockwave-2 1.4s ease-out 0.3s forwards' }}
+          />
+        </>
+      )}
+
+      {/* Halo lumineux persistant */}
+      {(phase === 'exploding' || phase === 'rebirthing') && (
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, rgba(96,165,250,0.3) 0%, rgba(59,130,246,0.1) 50%, transparent 70%)',
+            animation: 'supernova-glow 1.5s ease-out forwards'
+          }}
+        />
+      )}
+
+      {/* Nébuleuse résiduelle colorée */}
+      {phase === 'exploding' && (
+        <>
+          <div
+            className="absolute inset-0 rounded-full pointer-events-none opacity-60"
+            style={{
+              background: 'conic-gradient(from 0deg, rgba(59,130,246,0.4), rgba(234,88,12,0.3), rgba(147,51,234,0.3), rgba(6,182,212,0.4), rgba(59,130,246,0.4))',
+              animation: 'nebula-expand 2s ease-out forwards',
+              filter: 'blur(8px)'
+            }}
+          />
+          <div
+            className="absolute inset-0 rounded-full pointer-events-none opacity-40"
+            style={{
+              background: 'conic-gradient(from 180deg, rgba(251,146,60,0.5), rgba(96,165,250,0.4), rgba(34,211,238,0.4), rgba(251,146,60,0.5))',
+              animation: 'nebula-expand 2.5s ease-out 0.2s forwards',
+              filter: 'blur(12px)'
+            }}
+          />
+        </>
+      )}
+
+      {/* ===== PARTICULES DE SUPERNOVA ===== */}
+      {particles.map((particle) => (
+        <div
+          key={particle.id}
+          className="supernova-particle absolute rounded-full pointer-events-none"
+          style={{
+            width: particle.size,
+            height: particle.size,
+            backgroundColor: particle.color,
+            boxShadow: particle.type === 'spark'
+              ? `0 0 ${particle.size * 3}px ${particle.color}, 0 0 ${particle.size * 6}px ${particle.color}`
+              : particle.type === 'ember'
+                ? `0 0 ${particle.size * 2}px ${particle.color}, 0 0 ${particle.size * 4}px rgba(255,255,255,0.3)`
+                : `0 0 ${particle.size}px ${particle.color}`,
+            left: '50%',
+            top: '50%',
+            marginLeft: -particle.size / 2,
+            marginTop: -particle.size / 2,
+            opacity: 0
+          }}
+        />
+      ))}
+
+      {/* ===== LE SOLEIL ===== */}
+      <div
+        className={`relative w-full h-full rounded-full flex items-center justify-center group cursor-pointer transition-transform ${
+          phase === 'idle' ? 'hover:scale-105 active:scale-95' : 'pointer-events-none'
+        }`}
+        onClick={triggerSupernova}
+        style={{ animation: getSunAnimation() }}
+      >
+        {/* Outer glow ring */}
+        <div
+          className={`absolute -inset-3 md:-inset-4 bg-gradient-to-r from-orange-500/20 via-amber-500/10 to-orange-500/20 rounded-full blur-xl transition-opacity duration-300 ${
+            phase === 'exploding' ? 'opacity-0' : 'animate-[pulse_3s_ease-in-out_infinite]'
+          }`}
+        />
+
+        {/* Sun corona effect */}
+        <div
+          className={`absolute -inset-1 bg-gradient-to-br from-orange-400/40 via-transparent to-amber-500/40 rounded-full transition-opacity duration-300 ${
+            phase === 'exploding' ? 'opacity-0' : 'animate-[spin_20s_linear_infinite]'
+          }`}
+        />
+
+        {/* Sun Body with Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-orange-700 rounded-full shadow-[0_0_60px_rgba(251,146,60,0.5),inset_0_0_30px_rgba(0,0,0,0.3)]" />
+
+        {/* Sun highlight */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent rounded-full" />
+
+        {/* Effet de chaleur intense pendant la contraction */}
+        {phase === 'contracting' && (
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(96,165,250,0.6) 30%, transparent 60%)',
+              animation: 'pulse 0.15s ease-in-out infinite'
+            }}
+          />
+        )}
+
+        {/* Dev Element: The Core Code Symbol */}
+        <div className="relative z-10 transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-12">
+          <CodeSlashIcon size={32} className="md:w-12 md:h-12 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.9)]" strokeWidth={2.5} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Composant SolarSystem qui englobe les orbites et le soleil
+const SolarSystem = () => {
+  const [supernovaPhase, setSupernovaPhase] = useState<SupernovaPhase>('idle');
+
+  return (
+    <div className="relative flex items-center justify-center">
+      {/* Background Atmosphere Glow - Multi-layered */}
+      <div className={`absolute w-56 md:w-96 h-56 md:h-96 bg-orange-500/10 blur-[120px] rounded-full transition-opacity duration-500 ${
+        supernovaPhase === 'exploding' ? 'opacity-0' : 'opacity-100'
+      }`}></div>
+      <div className={`absolute w-44 md:w-72 h-44 md:h-72 bg-amber-500/15 blur-[80px] rounded-full transition-opacity duration-500 ${
+        supernovaPhase === 'exploding' ? 'opacity-0' : 'animate-[pulse_4s_ease-in-out_infinite]'
+      }`}></div>
+
+      {/* Orbit 3 - Outer (Node.js) */}
+      <InteractiveOrbit
+        size="w-[260px] h-[260px]"
+        sizeMd="md:w-[400px] md:h-[400px]"
+        duration={35}
+        borderClass="border border-white/[0.03]"
+        supernovaPhase={supernovaPhase}
+        orbitIndex={2}
+      >
+        <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-[#0a0f0a] border border-green-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] transition-shadow duration-300">
+          <FaNodeJs className="text-green-500 text-lg md:text-xl pointer-events-none" />
+        </div>
+      </InteractiveOrbit>
+
+      {/* Orbit 2 - Middle (TypeScript) */}
+      <InteractiveOrbit
+        size="w-[195px] h-[195px]"
+        sizeMd="md:w-[300px] md:h-[300px]"
+        duration={28}
+        borderClass="border border-blue-500/10"
+        supernovaPhase={supernovaPhase}
+        orbitIndex={1}
+      >
+        <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-[#0a0a14] border border-blue-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] transition-shadow duration-300">
+          <SiTypescript className="text-blue-500 text-base md:text-lg pointer-events-none" />
+        </div>
+      </InteractiveOrbit>
+
+      {/* Orbit 1 - Inner (React) */}
+      <InteractiveOrbit
+        size="w-[140px] h-[140px]"
+        sizeMd="md:w-[210px] md:h-[210px]"
+        duration={18}
+        borderClass="border border-cyan-500/10"
+        supernovaPhase={supernovaPhase}
+        orbitIndex={0}
+      >
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#0a1214] border border-cyan-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-shadow duration-300">
+          <FaReact className="text-cyan-400 text-lg md:text-xl pointer-events-none animate-[spin_8s_linear_infinite]" />
+        </div>
+      </InteractiveOrbit>
+
+      {/* The Sun / Core - Clickable with explosion effect */}
+      <ExplodingSun onPhaseChange={setSupernovaPhase} />
     </div>
   );
 };
@@ -878,71 +1380,8 @@ const App = () => {
             </RevealOnScroll>
 
             {/* Visual Illustration - Dev Solar System */}
-            <RevealOnScroll delay={200} className="flex justify-center items-center relative order-1 md:order-2 mt-8 md:mt-0 pb-16 md:pb-0">
-               {/* Background Atmosphere Glow - Multi-layered */}
-               <div className="absolute w-72 md:w-96 h-72 md:h-96 bg-orange-500/10 blur-[120px] rounded-full"></div>
-               <div className="absolute w-56 md:w-72 h-56 md:h-72 bg-amber-500/15 blur-[80px] rounded-full animate-[pulse_4s_ease-in-out_infinite]"></div>
-
-               {/* Orbit 3 - Outer (Node.js) */}
-               <InteractiveOrbit
-                 size="w-[320px] h-[320px]"
-                 sizeMd="md:w-[400px] md:h-[400px]"
-                 duration={35}
-                 borderClass="border border-white/[0.03]"
-               >
-                 <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-[#0a0f0a] border border-green-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] transition-shadow duration-300">
-                   <FaNodeJs className="text-green-500 text-lg md:text-xl pointer-events-none" />
-                 </div>
-               </InteractiveOrbit>
-
-               {/* Orbit 2 - Middle (TypeScript) */}
-               <InteractiveOrbit
-                 size="w-[240px] h-[240px]"
-                 sizeMd="md:w-[300px] md:h-[300px]"
-                 duration={28}
-                 borderClass="border border-blue-500/10"
-               >
-                 <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-[#0a0a14] border border-blue-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] transition-shadow duration-300">
-                   <SiTypescript className="text-blue-500 text-base md:text-lg pointer-events-none" />
-                 </div>
-               </InteractiveOrbit>
-
-               {/* Orbit 1 - Inner (React) */}
-               <InteractiveOrbit
-                 size="w-[170px] h-[170px]"
-                 sizeMd="md:w-[210px] md:h-[210px]"
-                 duration={18}
-                 borderClass="border border-cyan-500/10"
-               >
-                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#0a1214] border border-cyan-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-shadow duration-300">
-                   <FaReact className="text-cyan-400 text-lg md:text-xl pointer-events-none animate-[spin_8s_linear_infinite]" />
-                 </div>
-               </InteractiveOrbit>
-
-               {/* The Sun / Core */}
-               <div className="relative w-24 md:w-36 h-24 md:h-36 rounded-full flex items-center justify-center group cursor-pointer">
-                 {/* Outer glow ring */}
-                 <div className="absolute -inset-3 md:-inset-4 bg-gradient-to-r from-orange-500/20 via-amber-500/10 to-orange-500/20 rounded-full blur-xl animate-[pulse_3s_ease-in-out_infinite]"></div>
-
-                 {/* Sun corona effect */}
-                 <div className="absolute -inset-1 bg-gradient-to-br from-orange-400/40 via-transparent to-amber-500/40 rounded-full animate-[spin_20s_linear_infinite]"></div>
-
-                 {/* Sun Body with Gradient */}
-                 <div className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-orange-700 rounded-full shadow-[0_0_60px_rgba(251,146,60,0.5),inset_0_0_30px_rgba(0,0,0,0.3)]"></div>
-
-                 {/* Sun highlight */}
-                 <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent rounded-full"></div>
-
-                 {/* Dev Element: The Core Code Symbol */}
-                 <div className="relative z-10 transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-12">
-                   <CodeSlashIcon size={40} className="md:w-12 md:h-12 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.9)]" strokeWidth={2.5} />
-                 </div>
-               </div>
-
-               {/* Floating particles */}
-               <div className="absolute w-2 h-2 bg-orange-400/60 rounded-full top-[20%] right-[15%] animate-[float_6s_ease-in-out_infinite] shadow-[0_0_10px_rgba(251,146,60,0.6)]"></div>
-               <div className="absolute w-1.5 h-1.5 bg-cyan-400/50 rounded-full bottom-[25%] left-[20%] animate-[float_8s_ease-in-out_infinite_1s] shadow-[0_0_8px_rgba(6,182,212,0.5)]"></div>
-               <div className="absolute w-1 h-1 bg-blue-400/40 rounded-full top-[35%] left-[10%] animate-[float_7s_ease-in-out_infinite_2s] shadow-[0_0_6px_rgba(59,130,246,0.4)]"></div>
+            <RevealOnScroll delay={200} className="flex justify-center items-center relative order-1 md:order-2 mt-16 md:mt-0 pb-8 md:pb-0">
+               <SolarSystem />
             </RevealOnScroll>
           </div>
         </section>
