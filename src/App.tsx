@@ -274,27 +274,18 @@ const StarBackground = () => {
 
     animationRef.current = requestAnimationFrame(animate);
 
-    // Régénérer au resize avec debounce et vérification de changement réel
+    // Resize du canvas seulement (jamais régénérer les étoiles)
     const handleResize = () => {
       // Annuler le timeout précédent
       if (resizeTimeoutRef.current) {
         clearTimeout(resizeTimeoutRef.current);
       }
 
-      // Debounce de 300ms pour éviter les appels multiples (Safari pull-to-refresh)
+      // Debounce pour éviter les appels multiples (Safari pull-to-refresh)
       resizeTimeoutRef.current = window.setTimeout(() => {
-        const newWidth = window.innerWidth;
-        const newHeight = window.innerHeight;
-
-        // Ne régénérer que si la taille a vraiment changé de plus de 50px
-        const widthDiff = Math.abs(newWidth - lastSizeRef.current.width);
-        const heightDiff = Math.abs(newHeight - lastSizeRef.current.height);
-
-        if (widthDiff > 50 || heightDiff > 50) {
-          resizeCanvas();
-          starsRef.current = generateStars();
-        }
-      }, 300);
+        resizeCanvas();
+        // NE PAS régénérer les étoiles - elles gardent leur position
+      }, 150);
     };
     window.addEventListener('resize', handleResize);
 
@@ -1055,8 +1046,8 @@ const App = () => {
               <RevealOnScroll key={index} delay={index * 150} className="h-full">
                 <TiltCard className="h-full">
                   <div className="group relative bg-[#0b0e1a]/80 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden h-full flex flex-col transition-all duration-500 hover:shadow-[0_0_30px_rgba(234,88,12,0.15)] hover:border-orange-500/30">
-                    {/* Animated border gradient */}
-                    <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                    {/* Animated border gradient - desktop only */}
+                    <div className="hidden md:block absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
                       <div className="absolute inset-[-2px] rounded-xl bg-gradient-to-r from-orange-500/50 via-amber-500/50 to-orange-500/50 animate-border-spin" style={{ padding: '2px' }}>
                         <div className="w-full h-full bg-[#0b0e1a] rounded-xl"></div>
                       </div>
@@ -1184,14 +1175,14 @@ const App = () => {
                   <span className="text-slate-300 group-hover:text-white transition-colors break-all">contact@freelance-lm.fr</span>
                 </a>
                 
-                <div className="flex gap-4">
-                  <a href="https://www.linkedin.com/in/lou-marche-90b988249/" className="flex-1 flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <a href="https://www.linkedin.com/in/lou-marche-90b988249/" className="flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
                     <Linkedin size={20} /> LinkedIn
                   </a>
-                  <a href="https://github.com/Wandalf-dev" className="flex-1 flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
+                  <a href="https://github.com/Wandalf-dev" className="flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
                     <Github size={20} /> GitHub
                   </a>
-                  <a href="https://www.malt.fr/profile/loumarche1" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
+                  <a href="https://www.malt.fr/profile/loumarche1" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 p-4 bg-[#0b0e1a] border border-white/5 rounded-lg hover:border-orange-500/30 hover:bg-white/5 hover:scale-[1.02] transition-all text-slate-300 hover:text-white">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm5.696 14.943c-1.273 2.203-3.88 3.522-6.044 3.522-1.665 0-2.792-.61-3.296-1.222l-.006.01-2.47 4.247H3.387l7.312-12.66c.504-.873 1.273-1.34 2.168-1.34.894 0 1.664.467 2.168 1.34l4.66 8.071v.032z"/>
                     </svg>
