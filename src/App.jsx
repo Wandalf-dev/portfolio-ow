@@ -293,7 +293,7 @@ export default function App() {
                   Projets<span className="text-blue-500">.</span>
                 </h2>
                 <p className="text-slate-400 text-lg md:text-xl font-light tracking-wide leading-relaxed">
-                  Une sélection de projets sur lesquels j'ai travaillé, du e-commerce aux plateformes éducatives.
+                  Une sélection de projets sur lesquels j'ai travaillé, du e-commerce aux sites web vitrines.
                 </p>
               </div>
             </div>
@@ -435,7 +435,7 @@ export default function App() {
           <div className={`section-title-glow ${contactVisible ? 'is-visible' : ''}`}>
             <p className="text-blue-400 font-light tracking-[0.3em] text-sm mb-4">CONTACT</p>
             <h2 className="text-4xl md:text-5xl font-light tracking-[0.05em] mb-8 text-slate-100">
-              Travaillons<br />ensemble<span className="text-blue-500">.</span>
+              Travaillons<br className="md:hidden" /> ensemble<span className="text-blue-500">.</span>
             </h2>
             <p className="text-slate-400 text-xl font-light tracking-wide mb-12 max-w-2xl">
               Un projet ambitieux ? Une refonte technique ? <br/>
