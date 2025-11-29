@@ -177,7 +177,7 @@ export default function App() {
   const scrollTo = (ref) => {
     const element = ref.current;
     if (element) {
-      const offset = window.innerWidth < 768 ? 80 : 150;
+      const offset = window.innerWidth < 768 ? 50 : 150;
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({
         top: elementPosition - offset,
@@ -216,8 +216,8 @@ export default function App() {
       </nav>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="min-h-screen flex flex-col justify-center px-6 md:px-16 lg:px-24 relative overflow-hidden">
-        <div className="max-w-5xl">
+      <section ref={heroRef} className="min-h-screen flex flex-col justify-center pt-20 md:pt-0 px-6 md:px-16 lg:px-24 relative overflow-hidden">
+        <div className="max-w-5xl -mt-16 md:mt-0">
           <div className={`overflow-hidden mb-6`}>
             <div className={`flex items-center gap-4 text-slate-400 text-sm font-light tracking-[0.3em] uppercase transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <span className={`h-px bg-slate-500 transition-all duration-1000 delay-500 ${isLoaded ? 'w-16' : 'w-0'}`}></span>
