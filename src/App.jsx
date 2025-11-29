@@ -167,7 +167,7 @@ export default function App() {
 
     const contactObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => setContactVisible(entry.isIntersecting));
-    }, { threshold: 0.5, rootMargin: '-40% 0px -10% 0px' });
+    }, { threshold: 0.2, rootMargin: '-20% 0px 0px 0px' });
 
     if (contactRef.current) contactObserver.observe(contactRef.current);
 
@@ -177,7 +177,7 @@ export default function App() {
   const scrollTo = (ref) => {
     const element = ref.current;
     if (element) {
-      const offset = window.innerWidth < 768 ? 20 : 150;
+      const offset = window.innerWidth < 768 ? 0 : 150;
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({
         top: elementPosition - offset,
@@ -191,11 +191,12 @@ export default function App() {
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4 md:px-12 md:py-6 flex justify-between items-center backdrop-blur-md bg-[#0f172a]/80 border-b border-white/5">
-        <div
-          className={`shrink-0 transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className={`shrink-0 cursor-pointer transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
         >
           <img src="/logo.png" alt="Logo" className="h-10 md:h-16 w-auto md:-my-4" />
-        </div>
+        </button>
 
         <div className={`flex gap-3 md:gap-10 text-xs md:text-sm font-light tracking-[0.1em] md:tracking-[0.2em] uppercase transition-all duration-700 delay-100 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
           {[
@@ -270,7 +271,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 transition-all duration-1000 delay-[1200ms] ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`absolute bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 transition-all duration-1000 delay-[1200ms] ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
           <span className="text-xs tracking-[0.2em] text-slate-500 uppercase">Scroll</span>
           <ChevronDown className="animate-bounce text-blue-500" size={24} />
         </div>
