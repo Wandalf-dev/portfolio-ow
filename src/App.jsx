@@ -190,14 +190,14 @@ export default function App() {
     <div className="bg-[#0f172a] text-slate-200 min-h-screen font-sans selection:bg-blue-500/30 selection:text-blue-200">
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 md:px-12 flex justify-between items-center backdrop-blur-md bg-[#0f172a]/80 border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4 md:px-12 md:py-6 flex justify-between items-center backdrop-blur-md bg-[#0f172a]/80 border-b border-white/5">
         <div
-          className={`transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+          className={`shrink-0 transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
         >
-          <img src="/logo.png" alt="Logo" className="h-16 w-auto -my-4" />
+          <img src="/logo.png" alt="Logo" className="h-10 md:h-16 w-auto md:-my-4" />
         </div>
 
-        <div className={`flex gap-6 md:gap-10 text-sm font-light tracking-[0.2em] uppercase transition-all duration-700 delay-100 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+        <div className={`flex gap-3 md:gap-10 text-xs md:text-sm font-light tracking-[0.1em] md:tracking-[0.2em] uppercase transition-all duration-700 delay-100 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
           {[
             { label: 'Projets', ref: projectsRef },
             { label: 'Compétences', ref: skillsRef },
