@@ -167,7 +167,7 @@ export default function App() {
 
     const contactObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => setContactVisible(entry.isIntersecting));
-    }, { threshold: 0.2, rootMargin: '-20% 0px 0px 0px' });
+    }, { threshold: 0.5, rootMargin: '-30% 0px 0px 0px' });
 
     if (contactRef.current) contactObserver.observe(contactRef.current);
 
