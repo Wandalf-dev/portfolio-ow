@@ -167,7 +167,7 @@ export default function App() {
 
     const contactObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => setContactVisible(entry.isIntersecting));
-    }, { threshold: 0.5, rootMargin: '-40% 0px 0px 0px' });
+    }, { threshold: 0.5, rootMargin: '-40% 0px -10% 0px' });
 
     if (contactRef.current) contactObserver.observe(contactRef.current);
 
@@ -177,7 +177,7 @@ export default function App() {
   const scrollTo = (ref) => {
     const element = ref.current;
     if (element) {
-      const offset = 150;
+      const offset = window.innerWidth < 768 ? 80 : 150;
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({
         top: elementPosition - offset,
