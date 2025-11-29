@@ -195,7 +195,7 @@ export default function App() {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className={`shrink-0 cursor-pointer transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
         >
-          <img src="/logo.png" alt="Logo" className="h-10 md:h-16 w-auto md:-my-4" />
+          <img src="/logo.png" alt="Logo" className="h-10 md:h-16 w-auto md:-my-4 transition-all duration-300 hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.7)]" />
         </button>
 
         <div className={`flex gap-3 md:gap-10 text-xs md:text-sm font-light tracking-[0.1em] md:tracking-[0.2em] uppercase transition-all duration-700 delay-100 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
