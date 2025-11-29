@@ -450,10 +450,10 @@ export default function App() {
               href="mailto:contact@freelance-lm.fr"
               className="inline-block relative group"
             >
-              <span className="text-3xl md:text-5xl font-light tracking-[0.05em] bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400 group-hover:to-blue-400 transition-all duration-300">
+              <span className="text-3xl md:text-5xl font-light tracking-[0.05em] bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400 group-hover:to-blue-400 transition-colors duration-300">
                 contact@freelance-lm.fr
               </span>
-              <span className="absolute -bottom-2 left-0 w-full h-px bg-gradient-to-r from-slate-100 to-blue-400 scale-x-0 origin-right transition-transform duration-500 ease-[cubic-bezier(0.43,0.195,0.02,1)] group-hover:scale-x-100 group-hover:origin-left" />
+              <span className="absolute -bottom-2 left-0 w-full h-[1px] bg-gradient-to-r from-slate-100 to-blue-400 scale-x-0 origin-right transition-transform duration-500 ease-[cubic-bezier(0.43,0.195,0.02,1)] group-hover:scale-x-100 group-hover:origin-left will-change-transform" />
             </a>
           </div>
         </div>
