@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Lenis from 'lenis';
 import { Github, Mail, Linkedin, ExternalLink, Code2, Database, Layout, ChevronDown } from 'lucide-react';
 import { SiSymfony, SiReact, SiTypescript, SiTailwindcss, SiMysql, SiDocker, SiGit, SiFigma, SiWordpress, SiHtml5, SiCss3, SiJavascript, SiPhp } from 'react-icons/si';
 import { TbApi } from 'react-icons/tb';
@@ -59,7 +60,7 @@ export default function App() {
       tech: ["React", "Symfony", "API Platform"],
       year: "2025",
       color: "#3b82f6",
-      link: "#",
+      link: "https://innovshopp.alwaysdata.net/",
       image: "/HJczyxRkXT.png"
     },
     {
@@ -69,7 +70,7 @@ export default function App() {
       tech: ["HTML", "CSS", "JS", "API REST"],
       year: "2025",
       color: "#0ea5e9",
-      link: "#",
+      link: "https://agenc-eco.alwaysdata.net/",
       image: "/OqvulqpAJi.png"
     },
     {
@@ -79,7 +80,7 @@ export default function App() {
       tech: ["PHP", "JS", "MySQL", "CSS", "HTML"],
       year: "2025",
       color: "#64748b",
-      link: "#",
+      link: "https://dupontcare.wuaze.com/?i=1",
       image: "/74QwSDgoNO.png"
     }
   ];
@@ -95,6 +96,25 @@ export default function App() {
 
   useEffect(() => {
     setIsLoaded(true);
+  }, []);
+
+  // Lenis smooth scroll - desktop only
+  useEffect(() => {
+    if (window.innerWidth < 768) return;
+
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    return () => lenis.destroy();
   }, []);
 
   // Cycle through roles with fade effect
@@ -187,15 +207,15 @@ export default function App() {
   };
 
   return (
-    <div className="bg-[#0f172a] text-slate-200 min-h-screen font-sans selection:bg-blue-500/30 selection:text-blue-200">
+    <div className="text-slate-200 min-h-screen selection:bg-blue-500/30 selection:text-blue-200" style={{ backgroundColor: "#0f172a", backgroundImage: "url('/distort-bg.png')", backgroundRepeat: "repeat", backgroundAttachment: "fixed" }}>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4 md:px-12 md:py-6 flex justify-between items-center backdrop-blur-md bg-[#0f172a]/80 border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4 md:px-12 md:py-6 flex justify-between items-center backdrop-blur-md bg-black/15 border-b border-white/5">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className={`shrink-0 cursor-pointer transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
         >
-          <img src="/logo.png" alt="Logo" className="h-10 md:h-16 w-auto md:-my-4 transition-all duration-300 hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.7)]" />
+          <img src="/wanlogo.svg" alt="Logo" className="h-10 md:h-14 w-auto md:-my-3 transition-all duration-300 hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.7)]" />
         </button>
 
         <div className={`flex gap-3 md:gap-10 text-xs md:text-sm font-light tracking-[0.1em] md:tracking-[0.2em] uppercase transition-all duration-700 delay-100 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
@@ -227,11 +247,12 @@ export default function App() {
           </div>
 
           <h1
-            className={`text-[11vw] md:text-[6vw] font-light leading-[0.9] tracking-[0.05em] mb-6 transition-all duration-1000 delay-500 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}
+            className={`text-[11vw] md:text-[6vw] font-medium leading-[0.9] tracking-tight mb-6 transition-all duration-1000 delay-500 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}
           >
             DÉVELOPPEUR<br />
             <span
-              className={`text-blue-500 transition-opacity duration-500 ${isFading ? 'opacity-0' : 'opacity-100'}`}
+              className={`font-garamond bg-clip-text text-transparent transition-opacity duration-500 ${isFading ? 'opacity-0' : 'opacity-100'}`}
+              style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)' }}
             >
               {roles[roleIndex]}
             </span>
@@ -258,7 +279,8 @@ export default function App() {
             </a>
             <button
               onClick={() => scrollTo(contactRef)}
-              className="group flex items-center gap-3 px-8 py-4 bg-blue-600 rounded-lg hover:bg-blue-500 text-white transition-colors duration-200"
+              className="group flex items-center gap-3 px-8 py-4 rounded-lg text-white transition-all duration-300 hover:opacity-90 cursor-pointer"
+              style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)' }}
             >
               <Mail size={20} />
               <span className="h-5 overflow-hidden">
@@ -272,15 +294,15 @@ export default function App() {
         </div>
 
         <div className={`absolute bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 transition-all duration-1000 delay-[1200ms] ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
-          <span className="text-xs tracking-[0.2em] text-slate-500 uppercase">Scroll</span>
-          <ChevronDown className="animate-bounce text-blue-500" size={24} />
+          <span className="text-xs tracking-[0.2em] uppercase text-slate-400">Scroll</span>
+          <ChevronDown className="animate-bounce text-slate-400" size={24} />
         </div>
       </section>
 
       {/* Projects Section */}
       <section
         ref={projectsRef}
-        className="relative py-32 px-6 md:px-16 lg:px-24 bg-[#0B1120]"
+        className="relative py-32 px-6 md:px-16 lg:px-24 bg-black/20"
       >
         <div className="flex flex-col md:flex-row gap-8 md:gap-16">
 
@@ -288,9 +310,9 @@ export default function App() {
           <div className="md:w-[35%]">
             <div className="sticky top-32 h-fit reveal-hidden">
               <div className={`section-title-glow ${projectsVisible ? 'is-visible' : ''}`}>
-                <p className="text-blue-400 font-light tracking-[0.3em] text-sm mb-3">PORTFOLIO</p>
+                <p className="font-light tracking-[0.3em] text-sm mb-3" style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>PORTFOLIO</p>
                 <h2 className="text-4xl md:text-5xl font-light tracking-[0.05em] text-slate-100 mb-6">
-                  Projets<span className="text-blue-500">.</span>
+                  Projets<span className="text-white">.</span>
                 </h2>
                 <p className="text-slate-400 text-lg md:text-xl font-light tracking-wide leading-relaxed">
                   Une sélection de projets sur lesquels j'ai travaillé, du e-commerce aux sites web vitrines.
@@ -365,13 +387,13 @@ export default function App() {
       {/* Skills Section */}
       <section
         ref={skillsRef}
-        className="py-32 md:pt-64 md:pb-64 relative bg-[#0B1120] overflow-hidden"
+        className="py-32 md:pt-64 md:pb-64 relative overflow-hidden bg-slate-900/40"
       >
         <div className="reveal-hidden px-6 md:px-16 lg:px-24 mb-16">
           <div className={`section-title-glow ${skillsVisible ? 'is-visible' : ''}`}>
-            <p className="text-blue-400 font-light tracking-[0.3em] text-sm mb-3">STACK</p>
+            <p className="font-light tracking-[0.3em] text-sm mb-3" style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>STACK</p>
             <h2 className="text-4xl md:text-5xl font-light tracking-[0.05em] text-slate-100">
-              Compétences<span className="text-blue-500">.</span>
+              Compétences<span className="text-white">.</span>
             </h2>
           </div>
         </div>
@@ -429,13 +451,13 @@ export default function App() {
       {/* Contact Section */}
       <section
         ref={contactRef}
-        className="py-32 px-6 md:px-16 lg:px-24 relative overflow-hidden bg-[#0f172a]"
+        className="py-32 px-6 md:px-16 lg:px-24 relative overflow-hidden bg-blue-950/20"
       >
         <div className="reveal-hidden">
           <div className={`section-title-glow ${contactVisible ? 'is-visible' : ''}`}>
-            <p className="text-blue-400 font-light tracking-[0.3em] text-sm mb-4">CONTACT</p>
+            <p className="font-light tracking-[0.3em] text-sm mb-4" style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>CONTACT</p>
             <h2 className="text-4xl md:text-5xl font-light tracking-[0.05em] mb-8 text-slate-100">
-              Travaillons<br className="md:hidden" /> ensemble<span className="text-blue-500">.</span>
+              Travaillons<br className="md:hidden" /> ensemble<span className="text-white">.</span>
             </h2>
             <p className="text-slate-400 text-xl font-light tracking-wide mb-12 max-w-2xl">
               Un projet ambitieux ? Une refonte technique ? <br/>
@@ -471,7 +493,7 @@ export default function App() {
               rel="noopener noreferrer"
               className="flex flex-col items-center gap-3 text-slate-400 hover:text-white transition-colors duration-300 group"
             >
-              <div className="p-4 rounded-full bg-slate-800/50 group-hover:bg-blue-600 group-hover:scale-110 transition-all duration-300">
+              <div className="social-btn p-4 rounded-full bg-slate-800/50 transition-all duration-300">
                 {link.icon}
               </div>
               <span className="text-sm font-light tracking-[0.2em] uppercase">{link.name}</span>
@@ -481,7 +503,7 @@ export default function App() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm font-light tracking-wide bg-[#0B1120]">
+      <footer className="py-8 px-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm font-light tracking-wide bg-black/30">
         <span>© 2025 Lou Marche Portfolio</span>
         <div className="flex items-center gap-2">
           <span>Crafted with</span>
