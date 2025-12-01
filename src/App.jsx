@@ -210,7 +210,7 @@ export default function App() {
     <div className="text-slate-200 min-h-screen selection:bg-blue-500/30 selection:text-blue-200" style={{ backgroundColor: "#0f172a", backgroundImage: "url('/distort-bg.png')", backgroundRepeat: "repeat", backgroundAttachment: "fixed" }}>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4 md:px-12 md:py-6 flex justify-between items-center backdrop-blur-md bg-black/15 border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-3 md:px-12 md:py-4 flex justify-between items-center backdrop-blur-sm bg-[#182032]/80 border-b border-white/5">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className={`shrink-0 cursor-pointer transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
@@ -503,7 +503,7 @@ export default function App() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm font-light tracking-wide bg-black/30">
+      <footer className="py-5 md:py-6 px-4 md:px-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm font-light tracking-wide bg-black/30">
         <span>© 2025 Lou Marche Portfolio</span>
         <div className="flex items-center gap-2">
           <span>Crafted with</span>
