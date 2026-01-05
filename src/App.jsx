@@ -61,7 +61,7 @@ export default function App() {
       year: "2025",
       color: "#3b82f6",
       link: "https://innovshopp.alwaysdata.net/",
-      image: "/HJczyxRkXT.png"
+      image: "/Innovshop.webp"
     },
     {
       id: 2,
@@ -71,7 +71,7 @@ export default function App() {
       year: "2025",
       color: "#0ea5e9",
       link: "https://agenc-eco.alwaysdata.net/",
-      image: "/OqvulqpAJi.png"
+      image: "/agenceco.webp"
     },
     {
       id: 3,
@@ -81,7 +81,7 @@ export default function App() {
       year: "2025",
       color: "#64748b",
       link: "https://dupontcare.wuaze.com/?i=1",
-      image: "/74QwSDgoNO.png"
+      image: "/DupontCare.webp"
     }
   ];
 
@@ -259,7 +259,16 @@ export default function App() {
           </h1>
 
           <p className={`text-lg md:text-xl text-slate-400 font-light tracking-wide max-w-2xl leading-relaxed transition-all duration-1000 delay-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            Je conçois des architectures web robustes et des interfaces immersives. Spécialisé en écosystèmes <span className="text-slate-200 font-normal">Symfony</span> & <span className="text-slate-200 font-normal">React</span>.
+            Je conçois des architectures web robustes et des interfaces immersives. Spécialisé en écosystèmes{' '}
+            <a href="https://symfony.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 group/symfony cursor-pointer">
+              <span className="text-slate-200 font-normal md:group-hover/symfony:text-[#a78bfa] transition-colors duration-200">Symfony</span>
+              <SiSymfony className="hidden md:inline w-0 md:group-hover/symfony:w-5 h-5 text-[#a78bfa] transition-all duration-200 overflow-hidden" />
+            </a>
+            {' & '}
+            <a href="https://react.dev" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 group/react cursor-pointer">
+              <span className="text-slate-200 font-normal md:group-hover/react:text-[#60a5fa] transition-colors duration-200">React</span>
+              <SiReact className="hidden md:inline w-0 md:group-hover/react:w-5 h-5 text-[#60a5fa] transition-all duration-200 overflow-hidden" />
+            </a>.
           </p>
 
           <div className={`mt-12 flex flex-wrap gap-4 transition-all duration-1000 delay-900 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
@@ -493,8 +502,8 @@ export default function App() {
               rel="noopener noreferrer"
               className="flex flex-col items-center gap-3 text-slate-400 hover:text-white transition-colors duration-300 group"
             >
-              <div className="social-btn p-4 rounded-full bg-slate-800/50 transition-all duration-300">
-                {link.icon}
+              <div className="social-btn p-4 rounded-full bg-slate-800/50">
+                <span className="block transform-gpu">{link.icon}</span>
               </div>
               <span className="text-sm font-light tracking-[0.2em] uppercase">{link.name}</span>
             </a>
@@ -504,7 +513,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="py-5 md:py-6 px-4 md:px-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm font-light tracking-wide bg-black/30">
-        <span>© 2025 Lou Marche Portfolio</span>
+        <span>© 2026 Lou Marche Portfolio</span>
         <div className="flex items-center gap-2">
           <span>Crafted with</span>
           <SiReact className="w-4 h-4 text-blue-400" />
