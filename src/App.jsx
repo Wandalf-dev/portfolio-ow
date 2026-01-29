@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Lenis from 'lenis';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Github, Mail, Linkedin, ExternalLink, Code2, Database, Layout, ChevronDown } from 'lucide-react';
 import { SiSymfony, SiReact, SiTypescript, SiTailwindcss, SiMysql, SiDocker, SiGit, SiFigma, SiWordpress, SiHtml5, SiCss3, SiJavascript, SiPhp } from 'react-icons/si';
 import { TbApi } from 'react-icons/tb';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const techIcons = {
   'React': SiReact,
@@ -194,6 +198,55 @@ export default function App() {
     return () => contactObserver.disconnect();
   }, [isLoaded]);
 
+  // GSAP ScrollTrigger animations
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const animateFrom = (elem, direction = 1) => {
+      let x = 0;
+      let y = direction * 80;
+
+      if (elem.classList.contains('gs_reveal_fromLeft')) {
+        x = -100;
+        y = 0;
+      } else if (elem.classList.contains('gs_reveal_fromRight')) {
+        x = 100;
+        y = 0;
+      }
+
+      gsap.fromTo(elem,
+        { x, y, autoAlpha: 0 },
+        {
+          duration: 1.25,
+          x: 0,
+          y: 0,
+          autoAlpha: 1,
+          ease: 'expo.out',
+          overwrite: 'auto'
+        }
+      );
+    };
+
+    const hide = (elem) => {
+      gsap.set(elem, { autoAlpha: 0 });
+    };
+
+    gsap.utils.toArray('.gs_reveal').forEach((elem) => {
+      hide(elem);
+
+      ScrollTrigger.create({
+        trigger: elem,
+        start: 'top 85%',
+        once: true,
+        onEnter: () => animateFrom(elem),
+      });
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, [isLoaded]);
+
   const scrollTo = (ref) => {
     const element = ref.current;
     if (element) {
@@ -288,8 +341,7 @@ export default function App() {
             </a>
             <button
               onClick={() => scrollTo(contactRef)}
-              className="group flex items-center gap-3 px-8 py-4 rounded-lg text-white transition-all duration-300 hover:opacity-90 cursor-pointer"
-              style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)' }}
+              className="gradient-btn group flex items-center gap-3 px-8 py-4 rounded-lg text-white transition-all duration-300 cursor-pointer"
             >
               <Mail size={20} />
               <span className="h-5 overflow-hidden">
@@ -313,57 +365,53 @@ export default function App() {
         ref={projectsRef}
         className="relative py-32 px-6 md:px-16 lg:px-24 bg-black/20"
       >
-        <div className="flex flex-col md:flex-row gap-8 md:gap-16">
+        {/* Section Header */}
+        <div className="mb-16">
+          <p className="gs_reveal gs_reveal_fromLeft font-light tracking-[0.3em] text-sm mb-3" style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>PORTFOLIO</p>
+          <h2 className="gs_reveal gs_reveal_fromLeft text-4xl md:text-5xl font-light tracking-[0.05em] text-slate-100 mb-6">
+            Projets<span className="text-white">.</span>
+          </h2>
+          <p className="gs_reveal gs_reveal_fromLeft text-slate-400 text-lg md:text-xl font-light tracking-wide leading-relaxed max-w-2xl">
+            Une sélection de projets sur lesquels j'ai travaillé, du e-commerce aux sites web vitrines.
+          </p>
+        </div>
 
-          {/* Left - Sticky */}
-          <div className="md:w-[35%]">
-            <div className="sticky top-32 h-fit reveal-hidden">
-              <div className={`section-title-glow ${projectsVisible ? 'is-visible' : ''}`}>
-                <p className="font-light tracking-[0.3em] text-sm mb-3" style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>PORTFOLIO</p>
-                <h2 className="text-4xl md:text-5xl font-light tracking-[0.05em] text-slate-100 mb-6">
-                  Projets<span className="text-white">.</span>
-                </h2>
-                <p className="text-slate-400 text-lg md:text-xl font-light tracking-wide leading-relaxed">
-                  Une sélection de projets sur lesquels j'ai travaillé, du e-commerce aux sites web vitrines.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right - Scrolling Cards with suction effect */}
-          <div className="md:w-[65%] space-y-32 md:space-y-96">
-            {projects.map((project, index) => (
+        {/* Stacking Cards - Full Width */}
+        <ul id="stacking-cards">
+          {projects.map((project, index) => (
+            <li
+              key={project.id}
+              ref={el => cardRefs.current[index] = el}
+              data-card-id={project.id}
+              className={`stacking-card ${index === 0 ? 'reveal-hidden' : ''}`}
+              style={{ '--card-index': index + 1 }}
+            >
               <a
-                key={project.id}
-                ref={el => cardRefs.current[index] = el}
-                data-card-id={project.id}
                 href={project.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`project-card group block cursor-pointer ${index === 0 ? 'reveal-hidden' : ''}`}
+                className="stacking-card__content group block cursor-pointer"
               >
-                <div
-                  className={`relative bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden hover:border-slate-700 transition-all duration-500 ${visibleCards[project.id] ? '' : 'opacity-20 scale-[0.98]'}`}
-                >
+                <div className="h-full bg-[#0B1120] border border-slate-800 rounded-xl overflow-hidden hover:border-slate-700 transition-all duration-500">
                   {/* Image */}
-                  <div className="bg-slate-800">
+                  <div className="bg-slate-800 max-h-[50vh] overflow-hidden">
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-auto object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                      className="w-full h-full object-cover object-top opacity-80 group-hover:opacity-100 transition-opacity duration-300"
                     />
                   </div>
 
                   {/* Content */}
-                  <div className="p-5">
+                  <div className="p-5 md:p-8">
                     <div className="flex items-start justify-between gap-4 mb-3">
-                      <h3 className="text-xl font-light tracking-[0.05em] text-slate-100 group-hover:text-blue-400 transition-colors duration-300">
+                      <h3 className="text-xl md:text-2xl font-light tracking-[0.05em] text-slate-100 group-hover:text-blue-400 transition-colors duration-300">
                         {project.title}
                       </h3>
                       <span className="text-slate-500 font-mono text-xs shrink-0">{project.year}</span>
                     </div>
 
-                    <p className="text-slate-400 text-base font-light tracking-wide leading-relaxed mb-4">
+                    <p className="text-slate-400 text-base md:text-lg font-light tracking-wide leading-relaxed mb-4">
                       {project.description}
                     </p>
 
@@ -388,9 +436,9 @@ export default function App() {
                   </div>
                 </div>
               </a>
-            ))}
-          </div>
-        </div>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Skills Section */}
@@ -398,18 +446,15 @@ export default function App() {
         ref={skillsRef}
         className="py-32 md:pt-64 md:pb-64 relative overflow-hidden bg-slate-900/40"
       >
-        <div className="reveal-hidden px-6 md:px-16 lg:px-24 mb-16">
-          <div className={`section-title-glow ${skillsVisible ? 'is-visible' : ''}`}>
-            <p className="font-light tracking-[0.3em] text-sm mb-3" style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>STACK</p>
-            <h2 className="text-4xl md:text-5xl font-light tracking-[0.05em] text-slate-100">
-              Compétences<span className="text-white">.</span>
-            </h2>
-          </div>
+        <div className="px-6 md:px-16 lg:px-24 mb-16">
+          <p className="gs_reveal gs_reveal_fromRight font-light tracking-[0.3em] text-sm mb-3" style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>STACK</p>
+          <h2 className="gs_reveal gs_reveal_fromRight text-4xl md:text-5xl font-light tracking-[0.05em] text-slate-100">
+            Compétences<span className="text-white">.</span>
+          </h2>
         </div>
 
         {/* Marquee */}
-        <div className="reveal-hidden relative overflow-hidden">
-          <div className={`section-title-glow ${skillsVisible ? 'is-visible' : ''}`}>
+        <div className="gs_reveal relative overflow-hidden">
             <div className="animate-marquee-infinite">
             {[0, 1].map((copy) => (
               <div key={copy} className="flex items-center shrink-0">
@@ -453,7 +498,6 @@ export default function App() {
               </div>
             ))}
             </div>
-          </div>
         </div>
       </section>
 
@@ -462,34 +506,30 @@ export default function App() {
         ref={contactRef}
         className="py-32 px-6 md:px-16 lg:px-24 relative overflow-hidden bg-blue-950/20"
       >
-        <div className="reveal-hidden">
-          <div className={`section-title-glow ${contactVisible ? 'is-visible' : ''}`}>
-            <p className="font-light tracking-[0.3em] text-sm mb-4" style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>CONTACT</p>
-            <h2 className="text-4xl md:text-5xl font-light tracking-[0.05em] mb-8 text-slate-100">
-              Travaillons<br className="md:hidden" /> ensemble<span className="text-white">.</span>
-            </h2>
-            <p className="text-slate-400 text-xl font-light tracking-wide mb-12 max-w-2xl">
-              Un projet ambitieux ? Une refonte technique ? <br/>
-              Discutons de la manière dont je peux apporter de la valeur à votre projet.
-            </p>
-          </div>
+        <div className="mb-8">
+          <p className="gs_reveal gs_reveal_fromLeft font-light tracking-[0.3em] text-sm mb-4" style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA 8%, #A78BFA 86%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>CONTACT</p>
+          <h2 className="gs_reveal gs_reveal_fromLeft text-4xl md:text-5xl font-light tracking-[0.05em] mb-8 text-slate-100">
+            Travaillons<br className="md:hidden" /> ensemble<span className="text-white">.</span>
+          </h2>
+          <p className="gs_reveal gs_reveal_fromLeft text-slate-400 text-xl font-light tracking-wide mb-12 max-w-2xl">
+            Un projet ambitieux ? Une refonte technique ? <br/>
+            Discutons de la manière dont je peux apporter de la valeur à votre projet.
+          </p>
         </div>
 
-        <div className="reveal-hidden delay-200">
-          <div className={`section-title-glow ${contactVisible ? 'is-visible' : ''}`}>
-            <a
-              href="mailto:contact@freelance-lm.fr"
-              className="inline-block relative group"
-            >
-              <span className="text-3xl md:text-5xl font-light tracking-[0.05em] bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400 group-hover:to-blue-400 transition-colors duration-300">
-                contact@freelance-lm.fr
-              </span>
-              <span className="absolute -bottom-2 left-0 w-full h-[1px] bg-gradient-to-r from-slate-100 to-blue-400 scale-x-0 origin-right transition-transform duration-500 ease-[cubic-bezier(0.43,0.195,0.02,1)] group-hover:scale-x-100 group-hover:origin-left will-change-transform" />
-            </a>
-          </div>
+        <div className="gs_reveal gs_reveal_fromLeft">
+          <a
+            href="mailto:contact@freelance-lm.fr"
+            className="inline-block relative group"
+          >
+            <span className="text-3xl md:text-5xl font-light tracking-[0.05em] bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400 group-hover:to-blue-400 transition-colors duration-300">
+              contact@freelance-lm.fr
+            </span>
+            <span className="absolute -bottom-2 left-0 w-full h-[1px] bg-gradient-to-r from-slate-100 to-blue-400 scale-x-0 origin-right transition-transform duration-500 ease-[cubic-bezier(0.43,0.195,0.02,1)] group-hover:scale-x-100 group-hover:origin-left will-change-transform" />
+          </a>
         </div>
 
-        <div className="reveal-hidden delay-300 mt-20 flex gap-12">
+        <div className="gs_reveal gs_reveal_fromLeft mt-20 flex gap-12">
           {[
             { name: 'GitHub', icon: <Github />, url: 'https://github.com/Wandalf-dev' },
             { name: 'LinkedIn', icon: <Linkedin />, url: 'https://www.linkedin.com/in/lou-marche-90b988249' },

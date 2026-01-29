@@ -1,6 +1,116 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=EB+Garamond:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* Gradient Button Animation Properties */
+@property --btn-fill {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --btn-fill-stop {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 100%;
+}
+
+@property --rg-1-x {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+
+@property --rg-1-y {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 50%;
+}
+
+@property --rg-2-x {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 20%;
+}
+
+@property --rg-2-y {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 70%;
+}
+
+@property --rg-3-x {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 70%;
+}
+
+@property --rg-3-y {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 20%;
+}
+
+@property --rg-4-x {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 50%;
+}
+
+@property --rg-4-y {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 50%;
+}
+
+.gradient-btn {
+  position: relative;
+  border: none;
+  transition: --btn-fill 0.5s, --btn-fill-stop 0.3s;
+  animation: gradient-move 5s alternate infinite ease-in-out;
+  background:
+    radial-gradient(
+      circle,
+      var(--btn-fill) var(--btn-fill-stop),
+      transparent
+    ) padding-box,
+    radial-gradient(circle 120px at var(--rg-1-x) var(--rg-1-y), #60A5FA, transparent) border-box,
+    radial-gradient(circle 150px at var(--rg-2-x) var(--rg-2-y), #A78BFA, transparent) border-box,
+    radial-gradient(circle 160px at var(--rg-3-x) var(--rg-3-y), #3b82f6, transparent) border-box,
+    radial-gradient(circle 200px at var(--rg-4-x) var(--rg-4-y), #818cf8, transparent) border-box;
+  background-repeat: no-repeat;
+  --btn-fill: linear-gradient(90deg, #60A5FA 0%, #A78BFA 100%);
+}
+
+@keyframes gradient-move {
+  30% {
+    --rg-1-x: 70%;
+    --rg-1-y: 20%;
+  }
+  40% {
+    --rg-2-x: 120%;
+    --rg-2-y: 50%;
+  }
+  45% {
+    --rg-4-x: -10%;
+    --rg-4-y: 10%;
+  }
+  50% {
+    --rg-3-x: 50%;
+    --rg-3-y: 50%;
+  }
+  70% {
+    --rg-1-x: -10%;
+    --rg-2-y: -20%;
+  }
+}
+
+/* GSAP Reveal Animations */
+.gs_reveal {
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
 @font-face {
   font-family: 'PP Right Didone';
   src: url('/fonts/PP-Right-Didone-Light.otf') format('opentype');
@@ -148,5 +258,58 @@ body {
   to { width: 100%; }
 }
 
+/* Stacking Cards */
+:root {
+  --card-height: auto;
+  --card-top-offset: 1.5em;
+}
 
+#stacking-cards {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+
+@media (min-width: 768px) {
+  #stacking-cards {
+    gap: 6rem;
+  }
+}
+
+.stacking-card {
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .stacking-card {
+    position: sticky;
+    top: 12vh;
+    padding-top: calc(var(--card-index) * var(--card-top-offset));
+    z-index: var(--card-index);
+  }
+}
+
+.stacking-card__content {
+  height: 100%;
+  transform-origin: 50% 0%;
+  will-change: transform, filter;
+}
+
+@media (min-width: 768px) {
+  .stacking-card__content {
+    animation: scale-stacking-card linear forwards;
+    animation-timeline: view();
+    animation-range: exit-crossing 0% exit-crossing 100%;
+  }
+}
+
+@keyframes scale-stacking-card {
+  to {
+    transform: scale(0.9) translateY(-5vh) rotateX(-10deg);
+    filter: brightness(0.5);
+  }
+}
 
