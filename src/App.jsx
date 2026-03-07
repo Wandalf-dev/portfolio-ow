@@ -3,7 +3,7 @@ import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Github, Mail, Linkedin, ExternalLink, Code2, Database, Layout, ChevronDown } from 'lucide-react';
-import { SiSymfony, SiReact, SiTypescript, SiTailwindcss, SiMysql, SiDocker, SiGit, SiFigma, SiWordpress, SiHtml5, SiCss3, SiJavascript, SiPhp } from 'react-icons/si';
+import { SiSymfony, SiReact, SiTypescript, SiTailwindcss, SiMysql, SiDocker, SiGit, SiFigma, SiWordpress, SiHtml5, SiCss3, SiJavascript, SiPhp, SiNextdotjs, SiStripe } from 'react-icons/si';
 import { TbApi } from 'react-icons/tb';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -24,6 +24,9 @@ const techIcons = {
   'Git': SiGit,
   'Figma': SiFigma,
   'WordPress': SiWordpress,
+  'Next.js': SiNextdotjs,
+  'Tailwind CSS': SiTailwindcss,
+  'Stripe': SiStripe,
 };
 
 const MaltLogo = () => (
@@ -59,6 +62,16 @@ export default function App() {
   const projects = [
     {
       id: 1,
+      title: "ProxyPing",
+      description: "Solution SaaS pour tester la vitesse et la disponibilité de proxies en temps réel.",
+      tech: ["Next.js", "TypeScript", "Tailwind CSS", "Stripe"],
+      year: "2025",
+      color: "#0ea5e9",
+      link: "https://proxyping.app/",
+      image: "/proxyping.webp"
+    },
+    {
+      id: 2,
       title: "InnovShop",
       description: "Site e-commerce innovant avec marketplace intégrée.",
       tech: ["React", "Symfony", "API Platform"],
@@ -66,16 +79,6 @@ export default function App() {
       color: "#3b82f6",
       link: "https://innovshopp.alwaysdata.net/",
       image: "/Innovshop.webp"
-    },
-    {
-      id: 2,
-      title: "AgencEco",
-      description: "Site vitrine d'agence écologique mettant en avant des projets durables.",
-      tech: ["HTML", "CSS", "JS", "API REST"],
-      year: "2025",
-      color: "#0ea5e9",
-      link: "https://agenc-eco.alwaysdata.net/",
-      image: "/agenceco.webp"
     },
     {
       id: 3,
